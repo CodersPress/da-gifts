@@ -1,9 +1,9 @@
 <?php
 
-add_action( 'init', 'dag_plugin_updater_init' );
-function dag_plugin_updater_init() {
+add_action( 'init', 'DAG_plugin_updater_init' );
+function DAG_plugin_updater_init() {
 
-	include_once('updater.php');
+	require ( dirname( __FILE__ ) . '/da-gifts-updater.php' );
 
 	define( 'WP_GITHUB_FORCE_UPDATE', true );
 
