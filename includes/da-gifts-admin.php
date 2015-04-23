@@ -5,7 +5,7 @@ function DAG_plugin_updater_init() {
 
 	require ( dirname( __FILE__ ) . '/da-gifts-updater.php' );
 
-	define( 'WP_GITHUB_FORCE_UPDATE', true );
+	define( 'WP_DAG_FORCE_UPDATE', true );
 
 	if ( is_admin() ) { // note the use of is_admin() to double check that this is happening in the admin
 		if ( is_admin() ) { 

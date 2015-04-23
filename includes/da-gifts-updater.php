@@ -101,7 +101,7 @@ class WP_DAG_Updater {
 	 * @return bool overrule or not
 	 */
 	public function overrule_transients() {
-		return ( defined( 'WP_GITHUB_FORCE_UPDATE' ) && WP_GITHUB_FORCE_UPDATE );
+		return ( defined( 'WP_DAG_FORCE_UPDATE' ) && WP_DAG_FORCE_UPDATE );
 	}
 
 
