@@ -4,7 +4,7 @@
 if ( ! defined( 'ABSPATH' ) || class_exists( 'WPDAGUpdater' ) || class_exists( 'WP_DAG_Updater' ) )
 	return;
 
-class WP_DNS_Updater {
+class WP_DAG_Updater {
 
 	/**
 	 * GitHub Updater version
