@@ -18,7 +18,7 @@ function DAG_plugin_updater_init() {
 			'zip_url' => 'https://github.com/CodersPress/da-gifts/zipball/master',
 			'sslverify' => false,
 			'requires' => '3.8',
-			'tested' => '4.1',
+			'tested' => '4.2',
 			'readme' => 'README.md',
 			'access_token' => '',
 		);
