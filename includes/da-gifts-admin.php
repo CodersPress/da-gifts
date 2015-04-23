@@ -1,4 +1,32 @@
 <?php
+
+add_action( 'init', 'dns_plugin_updater_init' );
+function dns_plugin_updater_init() {
+
+	include_once('updater.php');
+
+	define( 'WP_GITHUB_FORCE_UPDATE', true );
+
+	if ( is_admin() ) { // note the use of is_admin() to double check that this is happening in the admin
+		if ( is_admin() ) { 
+			$config = array(
+			'slug' => plugin_basename( __FILE__ ),
+			'proper_folder_name' => 'da-gifts',
+			'api_url' => 'https://api.github.com/repos/CodersPress/da-gifts',
+			'raw_url' => 'https://raw.github.com/CodersPress/da-gifts/master',
+			'github_url' => 'https://github.com/CodersPress/da-gifts',
+			'zip_url' => 'https://github.com/CodersPress/da-gifts/zipball/master',
+			'sslverify' => false,
+			'requires' => '3.8',
+			'tested' => '4.1',
+			'readme' => 'README.md',
+			'access_token' => '',
+		);
+		new WP_DAG_Updater( $config );
+	    }
+    }
+}
+
 require ( dirname( __FILE__ ) . '/da-gifts-classes.php' );
 function da_gifts_add_admin_menu() {
 		add_menu_page( 'Dating Gifts', 'DA Gifts Extented', 'manage_options', 'da-gifts-settings', 'da_gifts_admin' );
