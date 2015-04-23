@@ -1,7 +1,7 @@
 <?php
 
-add_action( 'init', 'dns_plugin_updater_init' );
-function dns_plugin_updater_init() {
+add_action( 'init', 'dag_plugin_updater_init' );
+function dag_plugin_updater_init() {
 
 	include_once('updater.php');
 
