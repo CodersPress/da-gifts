@@ -2,12 +2,12 @@
 
 add_action( 'init', 'DAG_plugin_updater_init' );
 function DAG_plugin_updater_init() {
+	if ( is_admin() ) { // note the use of is_admin() to double check that this is happening in the admin
 
 	require ( dirname( __FILE__ ) . '/da-gifts-updater.php' );
 
 	define( 'WP_DAG_FORCE_UPDATE', true );
 
-	if ( is_admin() ) { // note the use of is_admin() to double check that this is happening in the admin
 		if ( is_admin() ) { 
 			$config = array(
 			'slug' => plugin_basename( __FILE__ ),
@@ -15,7 +15,7 @@ function DAG_plugin_updater_init() {
 			'api_url' => 'https://api.github.com/repos/CodersPress/da-gifts',
 			'raw_url' => 'https://raw.github.com/CodersPress/da-gifts/master',
 			'github_url' => 'https://github.com/CodersPress/da-gifts',
-			'zip_url' => 'https://github.com/CodersPress/da-gifts/zipball/master',
+			'zip_url' => 'https://github.com/CodersPress/da-gifts/archive/zipball/master',
 			'sslverify' => false,
 			'requires' => '3.8',
 			'tested' => '4.2',
