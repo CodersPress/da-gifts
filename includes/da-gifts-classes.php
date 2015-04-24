@@ -75,7 +75,7 @@ function populate() {
 
 function da_gifts_allgift() {
 	global $wpdb;
-	$allgift = $wpdb->get_results( $wpdb->prepare("SELECT * FROM {$wpdb->base_prefix}da_gifts ", "") );
+	$allgift = $wpdb->get_results("SELECT * FROM {$wpdb->base_prefix}da_gifts ");
 	return $allgift;
 }
 
