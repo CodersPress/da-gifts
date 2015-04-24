@@ -86,17 +86,15 @@ function DAG_plugin_updater() {
         'api_url' => 'https://api.github.com/repos/CodersPress/da-gifts', 
         'raw_url' => 'https://raw.github.com/CodersPress/da-gifts/master', 
         'github_url' => 'https://github.com/CodersPress/da-gifts', 
-        'zip_url' => 'https://github.com/CodersPress/da-gifts/archive/zipball/master', 
+        'zip_url' => 'https://github.com/CodersPress/da-gifts/archive/master.zip', 
         'sslverify' => true,
 		'requires' => '3.0',
 		'tested' => '4.2',
 		'readme' => 'README.md',
-		'access_token' => 'dfd7ab3a37af5d4799765af574e188fa9f35ac09',
+		'access_token' => 'a04841d0ed87f7a347892f619e54f5025e4a69d1',
 		);
     new WP_DAG_Updater( $config );
     }
 }
-
 	require( dirname( __FILE__ ) . '/includes/da-gifts-admin.php' );
-
 ?>
