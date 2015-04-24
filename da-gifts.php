@@ -87,7 +87,7 @@ function DAG_plugin_updater() {
         'raw_url' => 'https://raw.github.com/CodersPress/da-gifts/master', 
         'github_url' => 'https://github.com/CodersPress/da-gifts', 
         'zip_url' => 'https://github.com/CodersPress/da-gifts/archive/zipball/master', 
-        'sslverify' => true,
+        'sslverify' => false,
 		'requires' => '3.0',
 		'tested' => '4.2',
 		'readme' => 'README.md',
