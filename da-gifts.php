@@ -96,7 +96,5 @@ function DAG_plugin_updater() {
     new WP_DAG_Updater( $config );
     }
 }
-
 	require( dirname( __FILE__ ) . '/includes/da-gifts-admin.php' );
-
 ?>
