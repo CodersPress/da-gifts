@@ -6,6 +6,14 @@ if ( ! defined( 'ABSPATH' ) || class_exists( 'WPDAGUpdater' ) || class_exists( '
 
 /**
  *
+ *
+ * @version 1.6
+ * @author Joachim Kudish <info@jkudish.com>
+ * @link http://jkudish.com
+ * @package WP_GitHub_Updater
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ * @copyright Copyright (c) 2011-2013, Joachim Kudish
+ *
  * GNU General Public License, Free Software Foundation
  * <http://creativecommons.org/licenses/GPL/2.0/>
  *
@@ -22,9 +30,7 @@ if ( ! defined( 'ABSPATH' ) || class_exists( 'WPDAGUpdater' ) || class_exists( '
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
-
 class WP_DAG_Updater {
 
 	/**
@@ -72,7 +78,7 @@ class WP_DAG_Updater {
 
 		// if the minimum config isn't set, issue a warning and bail
 		if ( ! $this->has_minimum_config() ) {
-			$message = 'The plugin Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
+			$message = 'The GitHub Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
 			$message .= implode( ',', $this->missing_config );
 			_doing_it_wrong( __CLASS__, $message , self::VERSION );
 			return;

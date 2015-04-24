@@ -3,13 +3,32 @@
 Plugin Name: Dating Theme Gifts Extended
 Plugin URI: http://coderspress.com
 Description: Extended set of gift images for Premiumpress - Dating Theme
-Version: 1.1
+Version: 1.0
 Revision Date: 17th April 2015
 Author: sMarty
 Author URI: http://coderspress.com
 License: GPLv2
 */
-
+/**
+ *
+ * GNU General Public License, Free Software Foundation
+ * <http://creativecommons.org/licenses/GPL/2.0/>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
 /*************************************************************************************************************/
 
 /* Version - only used for first time install */ 
@@ -51,8 +70,33 @@ function da_gifts_activate() {
 
 register_activation_hook( __FILE__, 'da_gifts_activate' );
 
-function da_gifts_init() {
-	require( dirname( __FILE__ ) . '/includes/da-gifts-admin.php' );
+if ( is_admin() ) { 
+
+add_action( 'init', 'DAG_plugin_updater' );
+
+function DAG_plugin_updater() {
+
+	require_once ( dirname( __FILE__ ) . '/includes/da-gifts-updater.php' );
+
+	define( 'WP_DAG_FORCE_UPDATE', true );
+		
+    $config = array(
+        'slug' => plugin_basename(__FILE__),
+        'proper_folder_name' => 'da-gifts',
+        'api_url' => 'https://api.github.com/repos/CodersPress/da-gifts', 
+        'raw_url' => 'https://raw.github.com/CodersPress/da-gifts/master', 
+        'github_url' => 'https://github.com/CodersPress/da-gifts', 
+        'zip_url' => 'https://github.com/CodersPress/da-gifts/archive/zipball/master', 
+        'sslverify' => true,
+		'requires' => '3.0',
+		'tested' => '4.2',
+		'readme' => 'README.md',
+		'access_token' => '',
+		);
+    new WP_DAG_Updater($config);
+    }
 }
-da_gifts_init();
+
+	require( dirname( __FILE__ ) . '/includes/da-gifts-admin.php' );
+
 ?>
