@@ -97,13 +97,14 @@ function da_gifts_counter() {
 
 add_action('init', 'sendGift');
 
-	function sendGift(){ global $CORE, $userdata;
+	function sendGift(){ global $userdata, $CORE;
 
-		$CORE->Language();
-        
+
 		// SEND GIFT MESSAGE
 		if(isset($_POST['action']) && $_POST['action'] == "sendThisgift" && $userdata->ID ){
-	 
+
+		$CORE->Language();
+
 	 	// SAVE MESSAGE
 		$Message = "
 		<div class='text-center'><img src='".site_url()."/wp-content/plugins/da-gifts/includes/images/".$_POST['gift']."' alt='gift' /></div>
@@ -131,12 +132,14 @@ add_action('init', 'sendGift');
 		add_post_meta($POSTID, "ref", get_permalink($_POST['pid']) );
 
 		// SEND EMAIL	 
-		$_POST['message'] = $_POST['contact_m1'];
-		$_POST['phone'] = $_POST['contact_p1'];
-		$_POST['email'] = $_POST['contact_e1'];
-		$_POST['name'] = $_POST['contact_n1'];
-		$CORE->SENDEMAIL($post->post_author,'contact');
-		 
+		$_POST['message'] = isset($_POST['contact_m1']) ? $_POST['contact_m1'] : '';
+		$_POST['phone'] = isset($_POST['contact_p1']) ? $_POST['contact_p1'] : '';
+		$_POST['email'] = isset($_POST['contact_e1']) ? $_POST['contact_e1'] : '';
+		$_POST['name'] = isset($_POST['contact_n1']) ? $_POST['contact_n1'] : '';
+        $post_author_id = get_post_field( 'post_author', $_POST['pid'] );
+        $CORE->SENDEMAIL($post_author_id,'contact');
+
+
 		// ADD LOG ENTRY
 		$CORE->ADDLOG("<a href='(ulink)'>".$userdata->user_nicename.'</a> used the send gift feature: <a href="(plink)"><b>['.get_the_title($_POST['pid']).']</b></a>.', $userdata->ID, $_POST['pid'] ,'label-info');
 		 
