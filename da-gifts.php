@@ -3,7 +3,7 @@
 Plugin Name: Dating Theme Gifts Extended
 Plugin URI: http://coderspress.com
 Description: Extended set of gift images for Premiumpress - Dating Theme
-Version: 1.0
+Version: 2.0
 Revision Date: 17th April 2015
 Author: sMarty
 Author URI: http://coderspress.com
@@ -88,11 +88,11 @@ function DAG_plugin_updater() {
         'github_url' => 'https://github.com/CodersPress/da-gifts', 
         'zip_url' => 'https://github.com/CodersPress/da-gifts/zipball/master', 
         'sslverify' => true,
-		'requires' => '3.0',
-		'tested' => '4.2',
-		'readme' => 'README.md',
-		'access_token' => '',
-		);
+	'requires' => '3.0',
+	'tested' => '4.2',
+	'readme' => 'README.md',
+	'access_token' => '',
+	);
     new WP_DAG_Updater( $config );
     }
 }
