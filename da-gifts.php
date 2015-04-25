@@ -3,36 +3,32 @@
 Plugin Name: Dating Theme Gifts Extended
 Plugin URI: http://coderspress.com
 Description: Extended set of gift images for Premiumpress - Dating Theme
-Version: 2.1
-Revision Date: 17th April 2015
+Version: 2.0
+Revision Date: 25th April 2015
 Author: sMarty
 Author URI: http://coderspress.com
 License: http://creativecommons.org/licenses/GPL/2.0
 */
-
-add_action( 'init', 'dag_plugin_updater' );
+add_action( 'init', 'dag_plugin_updater );
 function dag_plugin_updater() {
-
-	require ( dirname( __FILE__ ) . '/updater.php' );
-
+	include_once 'updater.php';
 	define( 'WP_DAG_FORCE_UPDATE', true );
-
-		if ( is_admin() ) { 
-			$config = array(
+	if ( is_admin() ) { 
+		$config = array(
 			'slug' => plugin_basename( __FILE__ ),
 			'proper_folder_name' => 'da-gifts',
 			'api_url' => 'https://api.github.com/repos/CodersPress/da-gifts',
 			'raw_url' => 'https://raw.github.com/CodersPress/da-gifts/master',
 			'github_url' => 'https://github.com/CodersPress/da-gifts',
-			'zip_url' => 'https://github.com/CodersPress/da-gifts/zipball/master',
+			'zip_url' => 'https://github.com/CodersPress/da-gifts/archive/master.zip',
 			'sslverify' => true,
-			'requires' => '3.8',
+			'requires' => '3.0',
 			'tested' => '4.2',
 			'readme' => 'README.md',
-			'access_token' => 'c3b9383ce7b16e149b3a6ede36c19456ab8dea27',
+			'access_token' => '0b057b04561e69606752751df740d2f9fd1da7d2',
 		);
 		new WP_DAG_Updater( $config );
-       }
+	}
 }
 
 /* Version - only used for first time install */ 

@@ -1,5 +1,19 @@
 <?php
+
+// Prevent loading this file directly and/or if the class is already defined
+if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_DAG_Updater' ) )
+	return;
+
 /**
+ *
+ *
+ * @version 1.6
+ * @author Joachim Kudish <info@jkudish.com>
+ * @link http://jkudish.com
+ * @package WP_GitHub_Updater
+ * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
+ * @copyright Copyright (c) 2011-2013, Joachim Kudish
+ *
  * GNU General Public License, Free Software Foundation
  * <http://creativecommons.org/licenses/GPL/2.0/>
  *
@@ -17,11 +31,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-// Prevent loading this file directly and/or if the class is already defined
-if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_DAG_Updater' ) )
-	return;
-
 class WP_DAG_Updater {
 
 	/**
@@ -69,7 +78,7 @@ class WP_DAG_Updater {
 
 		// if the minimum config isn't set, issue a warning and bail
 		if ( ! $this->has_minimum_config() ) {
-			$message = 'The DAG Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
+			$message = 'The Plugin Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
 			$message .= implode( ',', $this->missing_config );
 			_doing_it_wrong( __CLASS__, $message , self::VERSION );
 			return;
@@ -197,24 +206,27 @@ class WP_DAG_Updater {
 
 
 	/**
-	 * Get New Version from GitHub
+	 * Get New Version from github
 	 *
 	 * @since 1.0
 	 * @return int $version the version number
 	 */
 	public function get_new_version() {
-		$version = get_site_transient( md5($this->config['slug']).'_new_version' );
+		$version = get_site_transient( $this->config['slug'].'_new_version' );
 
 		if ( $this->overrule_transients() || ( !isset( $version ) || !$version || '' == $version ) ) {
 
-			$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
+			$query = trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] );
+			$query = add_query_arg( array( 'access_token' => $this->config['access_token'] ), $query );
+
+			$raw_response = wp_remote_get( $query, array( 'sslverify' => $this->config['sslverify'] ) );
 
 			if ( is_wp_error( $raw_response ) )
 				$version = false;
 
 			if (is_array($raw_response)) {
 				if (!empty($raw_response['body']))
-					preg_match( '/.*Version\:\s*(.*)$/mi', $raw_response['body'], $matches );
+					preg_match( '#^\s*Version\:\s*(.*)$#im', $raw_response['body'], $matches );
 			}
 
 			if ( empty( $matches[1] ) )
@@ -223,48 +235,28 @@ class WP_DAG_Updater {
 				$version = $matches[1];
 
 			// back compat for older readme version handling
-			// only done when there is no version found in file name
-			if ( false === $version ) {
-				$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . $this->config['readme'] );
+			$query = trailingslashit( $this->config['raw_url'] ) . $this->config['readme'];
+			$query = add_query_arg( array( 'access_token' => $this->config['access_token'] ), $query );
 
-				if ( is_wp_error( $raw_response ) )
-					return $version;
+			$raw_response = wp_remote_get( $query, array( 'sslverify' => $this->config['sslverify'] ) );
 
-				preg_match( '#^\s*`*~Current Version\:\s*([^~]*)~#im', $raw_response['body'], $__version );
+			if ( is_wp_error( $raw_response ) )
+				return $version;
 
-				if ( isset( $__version[1] ) ) {
-					$version_readme = $__version[1];
-					if ( -1 == version_compare( $version, $version_readme ) )
-						$version = $version_readme;
-				}
+			preg_match( '#^\s*`*~Current Version\:\s*([^~]*)~#im', $raw_response['body'], $__version );
+
+			if ( isset( $__version[1] ) ) {
+				$version_readme = $__version[1];
+				if ( -1 == version_compare( $version, $version_readme ) )
+					$version = $version_readme;
 			}
 
 			// refresh every 6 hours
 			if ( false !== $version )
-				set_site_transient( md5($this->config['slug']).'_new_version', $version, 60*60*6 );
+				set_site_transient( $this->config['slug'].'_new_version', $version, 60*60*6 );
 		}
 
 		return $version;
-	}
-
-
-	/**
-	 * Interact with GitHub
-	 *
-	 * @param string $query
-	 *
-	 * @since 1.6
-	 * @return mixed
-	 */
-	public function remote_get( $query ) {
-		if ( ! empty( $this->config['access_token'] ) )
-			$query = add_query_arg( array( 'access_token' => $this->config['access_token'] ), $query );
-
-		$raw_response = wp_remote_get( $query, array(
-			'sslverify' => $this->config['sslverify']
-		) );
-
-		return $raw_response;
 	}
 
 
@@ -278,10 +270,13 @@ class WP_DAG_Updater {
 		if ( isset( $this->github_data ) && ! empty( $this->github_data ) ) {
 			$github_data = $this->github_data;
 		} else {
-			$github_data = get_site_transient( md5($this->config['slug']).'_github_data' );
+			$github_data = get_site_transient( $this->config['slug'].'_github_data' );
 
 			if ( $this->overrule_transients() || ( ! isset( $github_data ) || ! $github_data || '' == $github_data ) ) {
-				$github_data = $this->remote_get( $this->config['api_url'] );
+				$query = $this->config['api_url'];
+				$query = add_query_arg( array( 'access_token' => $this->config['access_token'] ), $query );
+
+				$github_data = wp_remote_get( $query, array( 'sslverify' => $this->config['sslverify'] ) );
 
 				if ( is_wp_error( $github_data ) )
 					return false;
@@ -289,7 +284,7 @@ class WP_DAG_Updater {
 				$github_data = json_decode( $github_data['body'] );
 
 				// refresh every 6 hours
-				set_site_transient( md5($this->config['slug']).'_github_data', $github_data, 60*60*6 );
+				set_site_transient( $this->config['slug'].'_github_data', $github_data, 60*60*6 );
 			}
 
 			// Store the data in this class instance for future calls
@@ -338,7 +333,7 @@ class WP_DAG_Updater {
 
 
 	/**
-	 * Hook into the plugin update check and connect to GitHub
+	 * Hook into the plugin update check and connect to github
 	 *
 	 * @since 1.0
 	 * @param object  $transient the plugin data transient
@@ -382,7 +377,7 @@ class WP_DAG_Updater {
 	public function get_plugin_info( $false, $action, $response ) {
 
 		// Check if this call API is for the right plugin
-		if ( !isset( $response->slug ) || $response->slug != $this->config['slug'] )
+		if ( $response->slug != $this->config['slug'] )
 			return false;
 
 		$response->slug = $this->config['slug'];
