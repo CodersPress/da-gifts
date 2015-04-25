@@ -91,7 +91,7 @@ function DAG_plugin_updater() {
 		'requires' => '3.0',
 		'tested' => '4.2',
 		'readme' => 'README.md',
-		'access_token' => 'd2aaef20da6669e88a92492a3de9abe6294a060d',
+		'access_token' => '',
 		);
     new WP_DAG_Updater( $config );
     }
