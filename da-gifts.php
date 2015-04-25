@@ -36,6 +36,7 @@ define ( 'DA_GIFTS_DB_VERSION', '1' );
 
 function da_gifts_activate() {
 	global $wpdb;
+	if (get_site_option('da-gifts-db-version') == '') { // if first install load images and create DB table
 	if ( !empty($wpdb->charset) )
 		$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
 	$sql[] = "CREATE TABLE {$wpdb->base_prefix}da_gifts (
@@ -49,8 +50,6 @@ function da_gifts_activate() {
 	require_once( ABSPATH . 'wp-admin/upgrade-functions.php' );
 
 	dbDelta($sql);
-
-	if (get_site_option('da-gifts-db-version') == '') { // if first install load image to gifts table
 	if ($handle = opendir( dirname( __FILE__ ) . '/includes/images/') ) {
 	    while (false !== ($imagefile = readdir($handle))) {
 		if (imagefile != 'admin' && imagefile != '' && $imagefile != '.' && imagefile != '..') {
