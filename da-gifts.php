@@ -17,7 +17,6 @@ function dag_plugin_updater() {
 
 	define( 'WP_DAG_FORCE_UPDATE', true );
 
-	if ( is_admin() ) { 
 		if ( is_admin() ) { 
 			$config = array(
 			'slug' => plugin_basename( __FILE__ ),
@@ -33,8 +32,7 @@ function dag_plugin_updater() {
 			'access_token' => 'c3b9383ce7b16e149b3a6ede36c19456ab8dea27',
 		);
 		new WP_DAG_Updater( $config );
-	    }
-    }
+       }
 }
 
 /* Version - only used for first time install */ 
