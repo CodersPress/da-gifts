@@ -31,6 +31,34 @@ License: GPLv2
  */
 /*************************************************************************************************************/
 
+add_action( 'init', 'dag_plugin_updater' );
+function dag_plugin_updater() {
+
+	require ( dirname( __FILE__ ) . '/updater.php' );
+
+	define( 'WP_DAG_FORCE_UPDATE', true );
+
+	if ( is_admin() ) { // note the use of is_admin() to double check that this is happening in the admin
+		if ( is_admin() ) { 
+			$config = array(
+			'slug' => plugin_basename( __FILE__ ),
+			'proper_folder_name' => 'da-gifts',
+			'api_url' => 'https://api.github.com/repos/CodersPress/da-gifts',
+			'raw_url' => 'https://raw.github.com/CodersPress/da-gifts/master',
+			'github_url' => 'https://github.com/CodersPress/da-gifts',
+			'zip_url' => 'https://github.com/CodersPress/da-gifts/zipball/master',
+			'sslverify' => true,
+			'requires' => '3.8',
+			'tested' => '4.2',
+			'readme' => 'README.md',
+			'access_token' => 'f50960018d2e486215e6e62570a699640b2aaa25',
+		);
+		new WP_DAG_Updater( $config );
+	    }
+    }
+}
+
+
 /* Version - only used for first time install */ 
 define ( 'DA_GIFTS_DB_VERSION', '1' );
 
@@ -70,31 +98,5 @@ function da_gifts_activate() {
 
 register_activation_hook( __FILE__, 'da_gifts_activate' );
 
-if ( is_admin() ) { 
-
-add_action( 'init', 'DAG_plugin_updater' );
-
-function DAG_plugin_updater() {
-
-	require ( dirname( __FILE__ ) . '/updater.php' );
-
-	define( 'WP_DAG_FORCE_UPDATE', true );
-		
-    $config = array(
-        'slug' => plugin_basename(__FILE__),
-        'proper_folder_name' => 'da-gifts',
-        'api_url' => 'https://api.github.com/repos/CodersPress/da-gifts', 
-        'raw_url' => 'https://raw.github.com/CodersPress/da-gifts/master', 
-        'github_url' => 'https://github.com/CodersPress/da-gifts', 
-        'zip_url' => 'https://github.com/CodersPress/da-gifts/zipball/master', 
-        'sslverify' => true,
-		'requires' => '3.0',
-		'tested' => '4.2',
-		'readme' => 'README.md',
-		'access_token' => 'f50960018d2e486215e6e62570a699640b2aaa25',
-		);
-    new WP_DAG_Updater( $config );
-    }
-}
-	require( dirname( __FILE__ ) . '/includes/da-gifts-admin.php' );
+require( dirname( __FILE__ ) . '/includes/da-gifts-admin.php' );
 ?>
