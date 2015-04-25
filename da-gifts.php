@@ -3,15 +3,15 @@
 Plugin Name: Dating Theme Gifts Extended
 Plugin URI: http://coderspress.com
 Description: Extended set of gift images for Premiumpress - Dating Theme
-Version: 2.0
-Revision Date: 25th April 2015
+Version: 1.0
+Revision Date: 17th April 2015
 Author: sMarty
 Author URI: http://coderspress.com
 License: http://creativecommons.org/licenses/GPL/2.0
 */
-add_action( 'init', 'dag_plugin_updater );
+add_action( 'init', 'dag_plugin_updater' );
 function dag_plugin_updater() {
-	include_once 'updater.php';
+	include_once'updater.php';
 	define( 'WP_DAG_FORCE_UPDATE', true );
 	if ( is_admin() ) { 
 		$config = array(
@@ -54,9 +54,9 @@ function da_gifts_activate() {
 	if ($handle = opendir( dirname( __FILE__ ) . '/includes/images/') ) {
 	    while (false !== ($imagefile = readdir($handle))) {
 		if (imagefile != 'admin' && imagefile != '' && $imagefile != '.' && imagefile != '..') {
-			$imagename = explode(".", $imagefile);
+		$imagename = explode(".", $imagefile);
 	if ( $imagename[0] != 'admin' && $imagename[0] != '' ){
-        		$insert = $wpdb->prepare( "INSERT INTO " . $wpdb->base_prefix . "da_gifts ( gift_name, gift_image ) VALUES ( %s, %s )", $imagename[0], $imagefile );
+        $insert = $wpdb->prepare( "INSERT INTO " . $wpdb->base_prefix . "da_gifts ( gift_name, gift_image ) VALUES ( %s, %s )", $imagename[0], $imagefile );
 		$results = $wpdb->query( $insert );
 	}
 		}
