@@ -1,19 +1,6 @@
 <?php
-
-// Prevent loading this file directly and/or if the class is already defined
-if ( ! defined( 'ABSPATH' ) || class_exists( 'WPDAGUpdater' ) || class_exists( 'WP_DAG_Updater' ) )
-	return;
-
 /**
- *
- *
- * @version 1.6
- * @author Joachim Kudish <info@jkudish.com>
- * @link http://jkudish.com
- * @package WP_GitHub_Updater
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @copyright Copyright (c) 2011-2013, Joachim Kudish
- *
+
  * GNU General Public License, Free Software Foundation
  * <http://creativecommons.org/licenses/GPL/2.0/>
  *
@@ -31,6 +18,11 @@ if ( ! defined( 'ABSPATH' ) || class_exists( 'WPDAGUpdater' ) || class_exists( '
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+// Prevent loading this file directly and/or if the class is already defined
+if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_DAG_Updater' ) )
+	return;
+
 class WP_DAG_Updater {
 
 	/**
@@ -78,7 +70,7 @@ class WP_DAG_Updater {
 
 		// if the minimum config isn't set, issue a warning and bail
 		if ( ! $this->has_minimum_config() ) {
-			$message = 'The Plugin Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
+			$message = 'The DAG Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
 			$message .= implode( ',', $this->missing_config );
 			_doing_it_wrong( __CLASS__, $message , self::VERSION );
 			return;
