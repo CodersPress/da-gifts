@@ -76,7 +76,7 @@ add_action( 'init', 'DAG_plugin_updater' );
 
 function DAG_plugin_updater() {
 
-	require_once ( dirname( __FILE__ ) . '/includes/da-gifts-updater.php' );
+	require ( dirname( __FILE__ ) . '/updater.php' );
 
 	define( 'WP_DAG_FORCE_UPDATE', true );
 		
@@ -88,11 +88,11 @@ function DAG_plugin_updater() {
         'github_url' => 'https://github.com/CodersPress/da-gifts', 
         'zip_url' => 'https://github.com/CodersPress/da-gifts/zipball/master', 
         'sslverify' => true,
-	'requires' => '3.0',
-	'tested' => '4.2',
-	'readme' => 'README.md',
-	'access_token' => '',
-	);
+		'requires' => '3.0',
+		'tested' => '4.2',
+		'readme' => 'README.md',
+		'access_token' => 'f50960018d2e486215e6e62570a699640b2aaa25',
+		);
     new WP_DAG_Updater( $config );
     }
 }
