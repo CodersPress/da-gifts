@@ -93,37 +93,34 @@ function da_gifts_counter() {
 	return $gift_counter;
 }
 
-// Need something better from here on.... :(
-
 add_action('init', 'sendGift');
 
 	function sendGift(){ global $userdata, $CORE;
 
-
-		// SEND GIFT MESSAGE
-		if(isset($_POST['action']) && $_POST['action'] == "sendThisgift" && $userdata->ID ){
+		// SEND GIFT FORM
+		if(isset($_POST['action']) && $_POST['action'] == "sendThisgift" && $_POST['gift'] && $userdata->ID){ 
 
 		$CORE->Language();
 
 	 	// SAVE MESSAGE
 		$Message = "
 		<div class='text-center'><img src='".site_url()."/wp-content/plugins/da-gifts/includes/images/".$_POST['gift']."' alt='gift' /></div>
-		<p><b><a href='".get_author_posts_url( $userdata->ID )."'>".$userdata->user_nicename."</a></b> ".$CORE->_e(array('dating','2'))."</p>
+		<p><b><a href='".get_author_posts_url( $userdata->ID )."'>".$userdata->nickname."</a></b> ".$CORE->_e(array('dating','2'))."</p>
 		".$CORE->_e(array('single','30')).": <a href='".get_permalink($_POST['pid'])."'>".get_permalink($_POST['pid'])."</a>\r\n"; 
 	 
 		// SENDER			 
-		if(!$userdata->ID){ $userid = 1; }else{	$userid = $userdata->ID; }
-		
-		// SENT TO USER
+		if(!$userdata->ID){ $userid = 1; }else{ $userid = $userdata->ID; }
+
+		// SEND INTERNAL MESSAGE TO RECIPIENT
 		$user_info = get_userdata($_POST['user_id']);		
-		$send_my_post = array();
-		$send_my_post['post_title'] 		= $userdata->user_nicename." ".$CORE->_e(array('dating','2'));
-		$send_my_post['post_content'] 	= $Message;
-		$send_my_post['post_excerpt'] 	= "";
-		$send_my_post['post_status'] 	= "publish";
-		$send_my_post['post_type'] 		= "wlt_message";
-		$send_my_post['post_author'] 	= $userid;
-		$POSTID = wp_insert_post( $send_my_post );
+		$my_post = array();
+		$my_post['post_title'] 		= $userdata->nickname." ".$CORE->_e(array('dating','2'));
+		$my_post['post_content'] 	= $Message;
+		$my_post['post_excerpt'] 	= "";
+		$my_post['post_status'] 	= "publish";
+		$my_post['post_type'] 		= "wlt_message";
+		$my_post['post_author'] 	= $userid;
+		$POSTID = wp_insert_post( $my_post );
 		
 		// ADD SOME EXTRA CUSTOM FIELDS
 		add_post_meta($POSTID, "username", $user_info->user_login );	
@@ -131,24 +128,22 @@ add_action('init', 'sendGift');
 		add_post_meta($POSTID, "status", "unread" );
 		add_post_meta($POSTID, "ref", get_permalink($_POST['pid']) );
 
-		// SEND EMAIL	 
-		$_POST['message'] = isset($_POST['contact_m1']) ? $_POST['contact_m1'] : '';
-		$_POST['phone'] = isset($_POST['contact_p1']) ? $_POST['contact_p1'] : '';
-		$_POST['email'] = isset($_POST['contact_e1']) ? $_POST['contact_e1'] : '';
-		$_POST['name'] = isset($_POST['contact_n1']) ? $_POST['contact_n1'] : '';
+		// SEND GIFT NOTIFY EMAIL
+		$_POST['message'] = $Message;
+		$_POST['name'] = $userdata->nickname." ".$CORE->_e(array('dating','2'));
         $post_author_id = get_post_field( 'post_author', $_POST['pid'] );
         $CORE->SENDEMAIL($post_author_id,'contact');
-
 
 		// ADD LOG ENTRY
 		$CORE->ADDLOG("<a href='(ulink)'>".$userdata->user_nicename.'</a> used the send gift feature: <a href="(plink)"><b>['.get_the_title($_POST['pid']).']</b></a>.', $userdata->ID, $_POST['pid'] ,'label-info');
 		 
-		// LEAVE MSG	
+		// UPDATE USER	
 		$GLOBALS['error_message'] = $CORE->_e(array('dating','4'));
-		
+
         //UPDATE IMAGE SENT COUNT
         da_gifts_counter();
-		}
+
+        }
 	
 	}
 ?>

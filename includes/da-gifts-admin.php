@@ -22,13 +22,10 @@
 
 require ( dirname( __FILE__ ) . '/da-gifts-classes.php' );
 
-function da_gifts_add_admin_menu() {
-		add_menu_page( 'Dating Gifts', 'DA Gifts Extented', 'manage_options', 'da-gifts-settings', 'da_gifts_admin' );
-		}
-
-add_action( 'admin_menu', 'da_gifts_add_admin_menu' );
-
 function da_gifts_admin($message = '', $type = 'error') {
+if ($_REQUEST['settings-updated']=='true') {
+echo '<div id="message" class="updated fade"><p><strong>Option setting saved.</strong></p></div>';
+}
 	if ( $message != '' ) {
 	echo wp_specialchars( attribute_escape( $message ) );
 	}
@@ -100,26 +97,61 @@ function da_gifts_admin($message = '', $type = 'error') {
 
 	<div class="wrap">
 		<h1><?php _e( 'Gifts Admin' ) ?></h1>
-		<br />
-		<?php if ( isset($updated) ) : ?><?php echo "<div id='message' class='updated fade'><p>" . __( 'Description Updated!' ) . "</p></div>" ?><?php endif; ?>
-		<?php if ( isset($uploaded) ) : ?><?php echo "<div id='message' class='updated fade'><p>" . __( 'Gift Uploaded Successfully!' ) . "</p></div>" ?><?php endif; ?>
-<form action="<?php echo site_url() . '/wp-admin/admin.php?page=da-gifts-settings' ?>" method="post" enctype="multipart/form-data" name="gift-upload-form" id="gift-upload-form" >			
-<br/>
-<label><?php _e('Select Gift Image to Upload *' ) ?><br />
-<input type="file" name="file" id="file"/></label>
-<p class="submit">
-				<input type="submit" name="submit" value="<?php _e( 'Upload' ) ?>"/>
-			</p>
-<input type="hidden" name="action" value="gifts_upload" />
-<?php
-/* This is very important, don't leave it out. */
-wp_nonce_field( 'gifts-settings' );
-?>
+<form method="post" action="options.php">
+    <?php settings_fields("dag-settings-group");?>
+    <?php do_settings_sections("dag-settings-group");?>
+    <table class="widefat" style="width:80%;">
+ <thead style="background:#2EA2CC;color:#fff;">
+            <tr>
+                <th style="color:#fff;">Members Sending Gifts Option</th>
+                <th style="color:#fff;">Option</th>
+                 <th style="color:#fff;">Save</th>
+            </tr>
+        </thead>
+<tr>
+<td>By default any registered members can send gifts. <br />This setting will <b>Restrict Sending Gifts</b> by allowing only those with a Membership package.</td>
+<td>
+            <select name="dag_memberShipOnly" />
+            <option value="yes" <?php if ( get_option( 'dag_memberShipOnly')=='yes' ) echo 'selected="selected" '; ?>>Yes</option>
+            <option value="no" <?php if ( get_option( 'dag_memberShipOnly')=='no' ) echo 'selected="selected" '; ?>>No</option>
+            </select>
+</td>
+<td><input type="submit" class="button button-primary" name="submit" value="Save Setting"/></td>
+ </tr>
 </form>
-<br/>
-			<?php 
-			echo '<h3>Gift Item Editor :</h3>';
-            echo '<div style="width:80%">';
+</table>
+<br /><br />
+<?php if ( isset($updated) ) : ?><?php echo "<div id='message' class='updated fade'><p>" . __( 'Description Updated!' ) . "</p></div>" ?><?php endif; ?>
+<?php if ( isset($uploaded) ) : ?><?php echo "<div id='message' class='updated fade'><p>" . __( 'Gift Uploaded Successfully!' ) . "</p></div>" ?><?php endif; ?>
+<table class="widefat" style="width:80%;">
+<form action="<?php echo site_url() . '/wp-admin/admin.php?page=da-gifts-settings' ?>" method="post" enctype="multipart/form-data" name="gift-upload-form" id="gift-upload-form" >			
+ <thead style="background:#2EA2CC;color:#fff;">
+            <tr>
+                <th style="color:#fff;">Add a new Gift Image</th>
+                <th style="color:#fff;">Select a Gift</th>
+                <th style="color:#fff;">Save</th>
+            </tr>
+        </thead>
+<tr>
+<td>As an Administrator you are free to upload all types of images and sizes.<br />I recommend keeping image sizes and quality to a minimum.<br> This will improve the member experience and help save bandwidth.</td>
+<td><input type="file" name="file" id="file"/></td>
+<td><input type="submit" class="button button-primary" name="submit" value="Upload"/>
+<input type="hidden" name="action" value="gifts_upload" />
+<?php wp_nonce_field( 'gifts-settings' );?>
+</td>
+ </tr></form>
+</table>
+
+<br /><br />
+
+           <table class="widefat" style="width:80%;">     
+ <thead style="background:#2EA2CC;color:#fff;">
+             <tr>
+                <th style="color:#fff;">Gift Item Editor :</th>
+            </tr>
+        </thead>
+<tr><td>
+<?php 
 			$allgift = da_gifts_allgift();
 			foreach ($allgift as $giftitem) {
 			echo '<div class="giftImages">';
@@ -132,9 +164,8 @@ wp_nonce_field( 'gifts-settings' );
 			echo '<a href="'. site_url() . '/wp-admin/admin.php?page=da-gifts-settings&gift_id='.$giftitem->id.'&mode=delete" /><img src="'. site_url() .'/wp-content/plugins/da-gifts/includes/images/admin/delete.png" alt="Permanently Delete" title="Permanently Delete"/></a>';
 			echo '</div>';
 			echo '</div>';
-			}
-			?></div>
-	</div>
+			} ?></td></tr>
+	</table>
 	<?php
 	}
 }
@@ -166,13 +197,21 @@ echo '</ul>';
 }
 add_shortcode('GIFTSEXTENDED', 'gifts_extended');
 
-function append_gifts(){
+function append_gifts(){global $CORE, $userdata;
 ?>
 <script>
 jQuery(".giftideas").remove();
 jQuery('#giftmodal > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > form:nth-child(1) > input:nth-child(1)').val('sendThisgift');
 jQuery('<?php do_shortcode('[GIFTSEXTENDED]');?>').insertAfter("#giftmodal > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > p:nth-child(1)");
 </script>
-<?php } 
+<?php 
+$dag_memberShipOnly = get_option("dag_memberShipOnly");
+if ( !$userdata->wlt_membership && $dag_memberShipOnly = "yes"){ ?>
+<script>
+var NoMemberShip = "<?php echo strip_tags($CORE->_e(array('validate','25')));?>";
+jQuery('#giftmodal > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > form:nth-child(1)').attr('onsubmit', 'alert(NoMemberShip); return false;');
+</script>
+<?php }
+ } 
 add_action('wp_footer', 'append_gifts', 100);
 ?>

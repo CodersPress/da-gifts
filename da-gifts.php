@@ -34,6 +34,18 @@ function dag_plugin_updater() {
 /* Version - only used for first time install */ 
 define ( 'DA_GIFTS_DB_VERSION', '1' );
 
+function da_gifts_add_admin_menu() {
+		add_menu_page( 'Dating Gifts', 'DA Gifts Extented', 'manage_options', 'da-gifts-settings', 'da_gifts_admin' );
+        add_action('admin_init', 'register_dag_settings');
+		}
+
+function register_dag_settings() {
+    register_setting("dag-settings-group", "dag_memberShipOnly");
+}
+
+add_action( 'admin_menu', 'da_gifts_add_admin_menu' );
+
+
 function da_gifts_activate() {
 	global $wpdb;
 	if (get_site_option('da-gifts-db-version') == '') { // if first install load images and create DB table
@@ -65,6 +77,21 @@ function da_gifts_activate() {
 	}
      /* Version Set to 1 so we don't install DB again */ 
 	update_site_option( 'da-gifts-db-version', DA_GIFTS_DB_VERSION );
+
+add_action('admin_init', 'dag_defaults');
+function dag_defaults() {
+    $option = array(
+        "dag_memberShipOnly" => "yes", 
+      );
+    foreach($option as $key => $value) {
+        if (get_option($key) == NULL) {
+            update_option($key, $value);
+        }
+    }
+    return;
+}
+
+
 }
 
 register_activation_hook( __FILE__, 'da_gifts_activate' );
