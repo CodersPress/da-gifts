@@ -91,7 +91,6 @@ function dag_defaults() {
     return;
 }
 
-
 }
 
 register_activation_hook( __FILE__, 'da_gifts_activate' );
