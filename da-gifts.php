@@ -96,4 +96,5 @@ function dag_defaults() {
 register_activation_hook( __FILE__, 'da_gifts_activate' );
 
 require( dirname( __FILE__ ) . '/includes/da-gifts-admin.php' );
+
 ?>
