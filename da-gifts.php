@@ -20,7 +20,7 @@ function dag_plugin_updater() {
 			'api_url' => 'https://api.github.com/repos/CodersPress/da-gifts',
 			'raw_url' => 'https://raw.github.com/CodersPress/da-gifts/master',
 			'github_url' => 'https://github.com/CodersPress/da-gifts',
-			'zip_url' => 'https://github.com/CodersPress/da-gifts/archive/master.zip',
+			'zip_url' => 'https://github.com/CodersPress/da-gifts/zipball/master',
 			'sslverify' => true,
 			'requires' => '3.0',
 			'tested' => '4.2.1',
