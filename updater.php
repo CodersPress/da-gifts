@@ -340,7 +340,7 @@ class WP_DAG_Updater {
 	 * @return object $data the data
 	 */
 	public function get_plugin_data() {
-		include_once ABSPATH.'/wp-admin/includes/plugin.php';
+        include_once( ABSPATH . '/wp-admin/includes/plugin.php' );
 		$data = get_plugin_data( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 		return $data;
 	}
