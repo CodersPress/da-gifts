@@ -1,5 +1,4 @@
 <?php
-
 // Prevent loading this file directly and/or if the class is already defined
 if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_DAG_Updater' ) )
 	return;
@@ -56,7 +55,6 @@ class WP_DAG_Updater {
 	 */
 	private $github_data;
 
-
 	/**
 	 * Class Constructor
 	 *
@@ -78,7 +76,7 @@ class WP_DAG_Updater {
 
 		// if the minimum config isn't set, issue a warning and bail
 		if ( ! $this->has_minimum_config() ) {
-			$message = 'The DAG Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
+			$message = 'The LDM Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
 			$message .= implode( ',', $this->missing_config );
 			_doing_it_wrong( __CLASS__, $message , self::VERSION );
 			return;
@@ -117,7 +115,6 @@ class WP_DAG_Updater {
 			if ( empty( $this->config[$required_param] ) )
 				$this->missing_config[] = $required_param;
 		}
-
 		return ( empty( $this->missing_config ) );
 	}
 
@@ -150,7 +147,6 @@ class WP_DAG_Updater {
 			$this->config['zip_url'] = $zip_url;
 		}
 
-
 		if ( ! isset( $this->config['new_version'] ) )
 			$this->config['new_version'] = $this->get_new_version();
 
@@ -175,7 +171,6 @@ class WP_DAG_Updater {
 
 		if ( ! isset( $this->config['readme'] ) )
 			$this->config['readme'] = 'README.md';
-
 	}
 
 
@@ -188,6 +183,7 @@ class WP_DAG_Updater {
 	public function http_request_timeout() {
 		return 2;
 	}
+
 
 	/**
 	 * Callback fn for the http_request_args filter
@@ -218,41 +214,12 @@ class WP_DAG_Updater {
 
 			$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
 
-			if ( is_wp_error( $raw_response ) )
-				$version = false;
-
 			if (is_array($raw_response)) {
 				if (!empty($raw_response['body']))
 					preg_match( '/.*Version\:\s*(.*)$/mi', $raw_response['body'], $matches );
 			}
-
-			if ( empty( $matches[1] ) )
-				$version = false;
-			else
 				$version = $matches[1];
-
-			// back compat for older readme version handling
-			// only done when there is no version found in file name
-			if ( false === $version ) {
-				$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . $this->config['readme'] );
-
-				if ( is_wp_error( $raw_response ) )
-					return $version;
-
-				preg_match( '#^\s*`*~Current Version\:\s*([^~]*)~#im', $raw_response['body'], $__version );
-
-				if ( isset( $__version[1] ) ) {
-					$version_readme = $__version[1];
-					if ( -1 == version_compare( $version, $version_readme ) )
-						$version = $version_readme;
-				}
-			}
-
-			// refresh every 6 hours
-			if ( false !== $version )
-				set_site_transient( md5($this->config['slug']).'_new_version', $version, 60*60*6 );
 		}
-
 		return $version;
 	}
 
@@ -295,7 +262,7 @@ class WP_DAG_Updater {
 				if ( is_wp_error( $github_data ) )
 					return false;
 
-				$github_data = json_decode( $github_data['body'] );
+				 $github_data = json_decode( $github_data['body'] ); 
 
 				// refresh every 6 hours
 				set_site_transient( md5($this->config['slug']).'_github_data', $github_data, 60*60*6 );
@@ -304,7 +271,6 @@ class WP_DAG_Updater {
 			// Store the data in this class instance for future calls
 			$this->github_data = $github_data;
 		}
-
 		return $github_data;
 	}
 
@@ -332,7 +298,6 @@ class WP_DAG_Updater {
 		return ( !empty( $_description->description ) ) ? $_description->description : false;
 	}
 
-
 	/**
 	 * Get Plugin data
 	 *
@@ -344,7 +309,6 @@ class WP_DAG_Updater {
 		$data = get_plugin_data( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 		return $data;
 	}
-
 
 	/**
 	 * Hook into the plugin update check and connect to GitHub
