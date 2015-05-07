@@ -1,5 +1,5 @@
 <?php
-// Prevent loading this file directly
+// Prevent loading this file directly 
 if ( ! defined( 'ABSPATH' ) )
 	return;
 
@@ -30,24 +30,13 @@ if ( ! defined( 'ABSPATH' ) )
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-class WP_DAG_Updater {
-
-	/**
-	 * GitHub Updater version
-	 */
-	const VERSION = 1.6;
+class WP_CP_UPDATER {
 
 	/**
 	 * @var $config the config for the updater
 	 * @access public
 	 */
 	var $config;
-
-	/**
-	 * @var $missing_config any config that is missing from the initialization of this instance
-	 * @access public
-	 */
-	var $missing_config;
 
 	/**
 	 * @var $github_data temporiraly store the data fetched from GitHub, allows us to only load the data once per class instance
@@ -74,14 +63,6 @@ class WP_DAG_Updater {
 
 		$this->config = wp_parse_args( $config, $defaults );
 
-		// if the minimum config isn't set, issue a warning and bail
-		if ( ! $this->has_minimum_config() ) {
-			$message = 'The LDM Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
-			$message .= implode( ',', $this->missing_config );
-			_doing_it_wrong( __CLASS__, $message , self::VERSION );
-			return;
-		}
-
 		$this->set_defaults();
 
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'api_check' ) );
@@ -97,35 +78,13 @@ class WP_DAG_Updater {
 		add_filter( 'http_request_args', array( $this, 'http_request_sslverify' ), 10, 2 );
 	}
 
-	public function has_minimum_config() {
-
-		$this->missing_config = array();
-
-		$required_config_params = array(
-			'api_url',
-			'raw_url',
-			'github_url',
-			'zip_url',
-			'requires',
-			'tested',
-			'readme',
-		);
-
-		foreach ( $required_config_params as $required_param ) {
-			if ( empty( $this->config[$required_param] ) )
-				$this->missing_config[] = $required_param;
-		}
-		return ( empty( $this->missing_config ) );
-	}
-
-
 	/**
 	 * Check wether or not the transients need to be overruled and API needs to be called for every single page load
 	 *
 	 * @return bool overrule or not
 	 */
 	public function overrule_transients() {
-		return ( defined( 'WP_DAG_FORCE_UPDATE' ) && WP_DAG_FORCE_UPDATE );
+		return ( defined( 'WP_CP_FORCE_UPDATE' ) && WP_CP_FORCE_UPDATE );
 	}
 
 
@@ -170,7 +129,7 @@ class WP_DAG_Updater {
 			$this->config['homepage'] = $plugin_data['PluginURI'];
 
 		if ( ! isset( $this->config['readme'] ) )
-			$this->config['readme'] = 'README.md';
+			$this->config['readme'] = 'readme.txt';
 	}
 
 
@@ -211,7 +170,6 @@ class WP_DAG_Updater {
 		$version = get_site_transient( md5($this->config['slug']).'_new_version' );
 
 		if ( $this->overrule_transients() || ( !isset( $version ) || !$version || '' == $version ) ) {
-
 			$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
 
 			if (is_array($raw_response)) {
@@ -355,7 +313,7 @@ class WP_DAG_Updater {
 	public function get_plugin_info( $false, $action, $response ) {
 
 		// Check if this call API is for the right plugin
-		if ( !isset( $response->slug ) || $response->slug != $this->config['slug'] )
+		if ( !isset( $response->slug ) || $response->slug != $this->config['proper_folder_name'] )
 			return false;
 
 		$response->slug = $this->config['slug'];
