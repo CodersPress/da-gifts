@@ -109,6 +109,12 @@ class WP_CP_UPDATER {
 		if ( ! isset( $this->config['new_version'] ) )
 			$this->config['new_version'] = $this->get_new_version();
 
+		if ( ! isset( $this->config['requires'] ) )
+			$this->config['requires'] = $this->get_requires_version();
+
+		if ( ! isset( $this->config['tested'] ) )
+			$this->config['tested'] = $this->get_tested_version();
+
 		if ( ! isset( $this->config['last_updated'] ) )
 			$this->config['last_updated'] = $this->get_date();
 
@@ -128,8 +134,6 @@ class WP_CP_UPDATER {
 		if ( ! isset( $this->config['homepage'] ) )
 			$this->config['homepage'] = $plugin_data['PluginURI'];
 
-		if ( ! isset( $this->config['readme'] ) )
-			$this->config['readme'] = 'README.md';
 	}
 
 
@@ -174,13 +178,36 @@ class WP_CP_UPDATER {
 
 			if (is_array($raw_response)) {
 				if (!empty($raw_response['body']))
-					preg_match( '/.*Version\:\s*(.*)$/mi', $raw_response['body'], $matches );
+					preg_match( '/.*Version\:\s*(.*)$/mi', $raw_response['body'], $versions );
 			}
-				$version = $matches[1];
+				$version = $versions[1]; 
 		}
-		return $version;
+		return $version; 
 	}
 
+	public function get_tested_version() {
+		
+			$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
+
+			if (is_array($raw_response)) {
+				if (!empty($raw_response['body']))
+					preg_match( '/.*WP_Compatible\:\s*(.*)$/mi', $raw_response['body'], $compatible );
+			}
+				$compatible = $compatible[1];
+		return $compatible;
+	}
+
+	public function get_requires_version() {
+		
+			$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
+
+			if (is_array($raw_response)) {
+				if (!empty($raw_response['body']))
+					preg_match( '/.*WP_Requires\:\s*(.*)$/mi', $raw_response['body'], $requires );
+			}
+				$requires = $requires[1];
+		return $requires;
+	}
 
 	/**
 	 * Interact with GitHub
@@ -312,10 +339,6 @@ class WP_CP_UPDATER {
 	 */
 	public function get_plugin_info( $false, $action, $response ) {
 
-		// Check if this call API is for the right plugin
-		if ( !isset( $response->slug ) || $response->slug != $this->config['proper_folder_name'] )
-			return false;
-
 		$response->slug = $this->config['slug'];
 		$response->plugin_name  = $this->config['plugin_name'];
 		$response->version = $this->config['new_version'];
@@ -328,7 +351,7 @@ class WP_CP_UPDATER {
 		$response->sections = array( 'description' => $this->config['description'] );
 		$response->download_link = $this->config['zip_url'];
 
-		return $response;
+		return $response; 
 	}
 
 
