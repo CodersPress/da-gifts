@@ -1,5 +1,6 @@
 <?php
-// Prevent loading this file directly 
+
+// Prevent loading this file directly and/or if the class is already defined
 if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_DAG_UPDATER' ) )
 	return;
 
@@ -33,16 +34,28 @@ if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_DAG_UPDATER' ) )
 class WP_DAG_UPDATER {
 
 	/**
+	 * GitHub Updater version
+	 */
+	const VERSION = 1.6;
+
+	/**
 	 * @var $config the config for the updater
 	 * @access public
 	 */
 	var $config;
 
 	/**
+	 * @var $missing_config any config that is missing from the initialization of this instance
+	 * @access public
+	 */
+	var $missing_config;
+
+	/**
 	 * @var $github_data temporiraly store the data fetched from GitHub, allows us to only load the data once per class instance
 	 * @access private
 	 */
 	private $github_data;
+
 
 	/**
 	 * Class Constructor
@@ -63,6 +76,14 @@ class WP_DAG_UPDATER {
 
 		$this->config = wp_parse_args( $config, $defaults );
 
+		// if the minimum config isn't set, issue a warning and bail
+		if ( ! $this->has_minimum_config() ) {
+			$message = 'The GitHub Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
+			$message .= implode( ',', $this->missing_config );
+			_doing_it_wrong( __CLASS__, $message , self::VERSION );
+			return;
+		}
+
 		$this->set_defaults();
 
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'api_check' ) );
@@ -78,13 +99,36 @@ class WP_DAG_UPDATER {
 		add_filter( 'http_request_args', array( $this, 'http_request_sslverify' ), 10, 2 );
 	}
 
+	public function has_minimum_config() {
+
+		$this->missing_config = array();
+
+		$required_config_params = array(
+			'api_url',
+			'raw_url',
+			'github_url',
+			'zip_url',
+			'requires',
+			'tested',
+			'readme',
+		);
+
+		foreach ( $required_config_params as $required_param ) {
+			if ( empty( $this->config[$required_param] ) )
+				$this->missing_config[] = $required_param;
+		}
+
+		return ( empty( $this->missing_config ) );
+	}
+
+
 	/**
 	 * Check wether or not the transients need to be overruled and API needs to be called for every single page load
 	 *
 	 * @return bool overrule or not
 	 */
 	public function overrule_transients() {
-		return ( defined( 'WP_CP_FORCE_UPDATE' ) && WP_CP_FORCE_UPDATE );
+		return ( defined( 'WP_GITHUB_FORCE_UPDATE' ) && WP_GITHUB_FORCE_UPDATE );
 	}
 
 
@@ -106,14 +150,9 @@ class WP_DAG_UPDATER {
 			$this->config['zip_url'] = $zip_url;
 		}
 
+
 		if ( ! isset( $this->config['new_version'] ) )
 			$this->config['new_version'] = $this->get_new_version();
-
-		if ( ! isset( $this->config['requires'] ) )
-			$this->config['requires'] = $this->get_requires_version();
-
-		if ( ! isset( $this->config['tested'] ) )
-			$this->config['tested'] = $this->get_tested_version();
 
 		if ( ! isset( $this->config['last_updated'] ) )
 			$this->config['last_updated'] = $this->get_date();
@@ -134,6 +173,9 @@ class WP_DAG_UPDATER {
 		if ( ! isset( $this->config['homepage'] ) )
 			$this->config['homepage'] = $plugin_data['PluginURI'];
 
+		if ( ! isset( $this->config['readme'] ) )
+			$this->config['readme'] = 'README.md';
+
 	}
 
 
@@ -146,7 +188,6 @@ class WP_DAG_UPDATER {
 	public function http_request_timeout() {
 		return 2;
 	}
-
 
 	/**
 	 * Callback fn for the http_request_args filter
@@ -174,40 +215,47 @@ class WP_DAG_UPDATER {
 		$version = get_site_transient( md5($this->config['slug']).'_new_version' );
 
 		if ( $this->overrule_transients() || ( !isset( $version ) || !$version || '' == $version ) ) {
+
 			$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
+
+			if ( is_wp_error( $raw_response ) )
+				$version = false;
 
 			if (is_array($raw_response)) {
 				if (!empty($raw_response['body']))
-					preg_match( '/.*Version\:\s*(.*)$/mi', $raw_response['body'], $versions );
+					preg_match( '/.*Version\:\s*(.*)$/mi', $raw_response['body'], $matches );
 			}
-				$version = $versions[1]; 
+
+			if ( empty( $matches[1] ) )
+				$version = false;
+			else
+				$version = $matches[1];
+
+			// back compat for older readme version handling
+			// only done when there is no version found in file name
+			if ( false === $version ) {
+				$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . $this->config['readme'] );
+
+				if ( is_wp_error( $raw_response ) )
+					return $version;
+
+				preg_match( '#^\s*`*~Current Version\:\s*([^~]*)~#im', $raw_response['body'], $__version );
+
+				if ( isset( $__version[1] ) ) {
+					$version_readme = $__version[1];
+					if ( -1 == version_compare( $version, $version_readme ) )
+						$version = $version_readme;
+				}
+			}
+
+			// refresh every 6 hours
+			if ( false !== $version )
+				set_site_transient( md5($this->config['slug']).'_new_version', $version, 60*60*6 );
 		}
-		return $version; 
+
+		return $version;
 	}
 
-	public function get_tested_version() {
-		
-			$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
-
-			if (is_array($raw_response)) {
-				if (!empty($raw_response['body']))
-					preg_match( '/.*WP_Compatible\:\s*(.*)$/mi', $raw_response['body'], $compatible );
-			}
-				$compatible = $compatible[1];
-		return $compatible;
-	}
-
-	public function get_requires_version() {
-		
-			$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
-
-			if (is_array($raw_response)) {
-				if (!empty($raw_response['body']))
-					preg_match( '/.*WP_Requires\:\s*(.*)$/mi', $raw_response['body'], $requires );
-			}
-				$requires = $requires[1];
-		return $requires;
-	}
 
 	/**
 	 * Interact with GitHub
@@ -247,7 +295,7 @@ class WP_DAG_UPDATER {
 				if ( is_wp_error( $github_data ) )
 					return false;
 
-				 $github_data = json_decode( $github_data['body'] ); 
+				$github_data = json_decode( $github_data['body'] );
 
 				// refresh every 6 hours
 				set_site_transient( md5($this->config['slug']).'_github_data', $github_data, 60*60*6 );
@@ -256,6 +304,7 @@ class WP_DAG_UPDATER {
 			// Store the data in this class instance for future calls
 			$this->github_data = $github_data;
 		}
+
 		return $github_data;
 	}
 
@@ -283,6 +332,7 @@ class WP_DAG_UPDATER {
 		return ( !empty( $_description->description ) ) ? $_description->description : false;
 	}
 
+
 	/**
 	 * Get Plugin data
 	 *
@@ -290,10 +340,11 @@ class WP_DAG_UPDATER {
 	 * @return object $data the data
 	 */
 	public function get_plugin_data() {
-        include_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		include_once ABSPATH.'/wp-admin/includes/plugin.php';
 		$data = get_plugin_data( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 		return $data;
 	}
+
 
 	/**
 	 * Hook into the plugin update check and connect to GitHub
@@ -339,7 +390,10 @@ class WP_DAG_UPDATER {
 	 */
 	public function get_plugin_info( $false, $action, $response ) {
 
-		$response->slug = $this->config['proper_folder_name'];
+		// Check if this call API is for the right plugin
+
+
+		$response->slug = $this->config['slug'];
 		$response->plugin_name  = $this->config['plugin_name'];
 		$response->version = $this->config['new_version'];
 		$response->author = $this->config['author'];
@@ -351,7 +405,7 @@ class WP_DAG_UPDATER {
 		$response->sections = array( 'description' => $this->config['description'] );
 		$response->download_link = $this->config['zip_url'];
 
-		return $response; 
+		return $response;
 	}
 
 
