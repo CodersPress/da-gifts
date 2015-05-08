@@ -1,6 +1,6 @@
 <?php
 // Prevent loading this file directly 
-if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_CP_UPDATER' ) )
+if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_DAG_UPDATER' ) )
 	return;
 
 /**
@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_CP_UPDATER' ) )
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-class WP_CP_UPDATER {
+class WP_DAG_UPDATER {
 
 	/**
 	 * @var $config the config for the updater

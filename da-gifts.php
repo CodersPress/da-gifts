@@ -25,7 +25,7 @@ function dag_plugin_updater() {
 			'sslverify' => true,
 			'access_token' => '2251a69f71a70ab9368c4dcf706554f23e493e2e',
 		);
-		new WP_CP_UPDATER( $config );
+		new WP_DAG_UPDATER( $config );
 	}
 }
 
