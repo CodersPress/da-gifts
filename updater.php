@@ -1,6 +1,6 @@
 <?php
 // Prevent loading this file directly 
-if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_CP_Updater' ) )
+if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_CP_UPDATER' ) )
 	return;
 
 /**
