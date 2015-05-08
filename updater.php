@@ -1,6 +1,6 @@
 <?php
 // Prevent loading this file directly 
-if ( ! defined( 'ABSPATH' ) )
+if ( ! defined( 'ABSPATH' ) || class_exists( 'WP_CP_Updater' ) )
 	return;
 
 /**
@@ -129,7 +129,7 @@ class WP_CP_UPDATER {
 			$this->config['homepage'] = $plugin_data['PluginURI'];
 
 		if ( ! isset( $this->config['readme'] ) )
-			$this->config['readme'] = 'readme.txt';
+			$this->config['readme'] = 'README.md';
 	}
 
 
