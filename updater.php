@@ -339,7 +339,7 @@ class WP_CP_UPDATER {
 	 */
 	public function get_plugin_info( $false, $action, $response ) {
 
-		$response->slug = $this->config['slug'];
+		$response->slug = $this->config['proper_folder_name'];
 		$response->plugin_name  = $this->config['plugin_name'];
 		$response->version = $this->config['new_version'];
 		$response->author = $this->config['author'];
