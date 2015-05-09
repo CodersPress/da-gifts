@@ -391,7 +391,7 @@ class WP_DAG_UPDATER {
 	public function get_plugin_info( $false, $action, $response ) {
 
 		// Check if this call API is for the right plugin
-		if ( !isset( $response->slug ) || $response->slug != $this->config['slug'] )
+		if ( !isset( $response->slug ) || $response->slug != $this->config['proper_folder_name'] )
 			return false;
 
 		$response->slug = $this->config['slug'];
