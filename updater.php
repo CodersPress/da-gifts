@@ -76,14 +76,6 @@ class WP_DAG_UPDATER {
 
 		$this->config = wp_parse_args( $config, $defaults );
 
-		// if the minimum config isn't set, issue a warning and bail
-		if ( ! $this->has_minimum_config() ) {
-			$message = 'The GitHub Updater was initialized without the minimum required configuration, please check the config in your plugin. The following params are missing: ';
-			$message .= implode( ',', $this->missing_config );
-			_doing_it_wrong( __CLASS__, $message , self::VERSION );
-			return;
-		}
-
 		$this->set_defaults();
 
 		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'api_check' ) );
@@ -97,28 +89,6 @@ class WP_DAG_UPDATER {
 
 		// set sslverify for zip download
 		add_filter( 'http_request_args', array( $this, 'http_request_sslverify' ), 10, 2 );
-	}
-
-	public function has_minimum_config() {
-
-		$this->missing_config = array();
-
-		$required_config_params = array(
-			'api_url',
-			'raw_url',
-			'github_url',
-			'zip_url',
-			'requires',
-			'tested',
-			'readme',
-		);
-
-		foreach ( $required_config_params as $required_param ) {
-			if ( empty( $this->config[$required_param] ) )
-				$this->missing_config[] = $required_param;
-		}
-
-		return ( empty( $this->missing_config ) );
 	}
 
 
