@@ -34,21 +34,10 @@ if ( ! defined( 'ABSPATH' ) )
 class WP_DAG_UPDATER {
 
 	/**
-	 * GitHub Updater version
-	 */
-	const VERSION = 1.6;
-
-	/**
 	 * @var $config the config for the updater
 	 * @access public
 	 */
 	var $config;
-
-	/**
-	 * @var $missing_config any config that is missing from the initialization of this instance
-	 * @access public
-	 */
-	var $missing_config;
 
 	/**
 	 * @var $github_data temporiraly store the data fetched from GitHub, allows us to only load the data once per class instance
@@ -67,14 +56,7 @@ class WP_DAG_UPDATER {
 	 */
 	public function __construct( $config = array() ) {
 
-		$defaults = array(
-			'slug' => plugin_basename( __FILE__ ),
-			'proper_folder_name' => dirname( plugin_basename( __FILE__ ) ),
-			'sslverify' => true,
-			'access_token' => '',
-		);
-
-		$this->config = wp_parse_args( $config, $defaults );
+		$this->config = wp_parse_args( $config );
 
 		$this->set_defaults();
 
@@ -148,6 +130,7 @@ class WP_DAG_UPDATER {
 
 		if ( ! isset( $this->config['homepage'] ) )
 			$this->config['homepage'] = $plugin_data['PluginURI'];
+
 
 	}
 
