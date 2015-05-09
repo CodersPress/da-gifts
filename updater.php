@@ -150,6 +150,7 @@ class WP_DAG_UPDATER {
 			$this->config['zip_url'] = $zip_url;
 		}
 
+		$plugin_data = $this->get_plugin_data();
 
 		if ( ! isset( $this->config['new_version'] ) )
 			$this->config['new_version'] = $this->get_new_version();
@@ -158,23 +159,25 @@ class WP_DAG_UPDATER {
 			$this->config['last_updated'] = $this->get_date();
 
 		if ( ! isset( $this->config['description'] ) )
-			$this->config['description'] = $this->get_description();
+			$this->config['description'] = $plugin_data['Description'];
 
-		$plugin_data = $this->get_plugin_data();
 		if ( ! isset( $this->config['plugin_name'] ) )
 			$this->config['plugin_name'] = $plugin_data['Name'];
 
 		if ( ! isset( $this->config['version'] ) )
 			$this->config['version'] = $plugin_data['Version'];
 
+		if ( ! isset( $this->config['version'] ) )
+			$this->config['requires'] = $plugin_data['WP_Requires'];
+
+		if ( ! isset( $this->config['version'] ) )
+			$this->config['tested'] = $plugin_data['WP_Compatible'];
+
 		if ( ! isset( $this->config['author'] ) )
 			$this->config['author'] = $plugin_data['Author'];
 
 		if ( ! isset( $this->config['homepage'] ) )
 			$this->config['homepage'] = $plugin_data['PluginURI'];
-
-		if ( ! isset( $this->config['readme'] ) )
-			$this->config['readme'] = 'README.md';
 
 	}
 
@@ -226,27 +229,7 @@ class WP_DAG_UPDATER {
 					preg_match( '/.*Version\:\s*(.*)$/mi', $raw_response['body'], $matches );
 			}
 
-			if ( empty( $matches[1] ) )
-				$version = false;
-			else
 				$version = $matches[1];
-
-			// back compat for older readme version handling
-			// only done when there is no version found in file name
-			if ( false === $version ) {
-				$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . $this->config['readme'] );
-
-				if ( is_wp_error( $raw_response ) )
-					return $version;
-
-				preg_match( '#^\s*`*~Current Version\:\s*([^~]*)~#im', $raw_response['body'], $__version );
-
-				if ( isset( $__version[1] ) ) {
-					$version_readme = $__version[1];
-					if ( -1 == version_compare( $version, $version_readme ) )
-						$version = $version_readme;
-				}
-			}
 
 			// refresh every 6 hours
 			if ( false !== $version )
@@ -318,18 +301,6 @@ class WP_DAG_UPDATER {
 	public function get_date() {
 		$_date = $this->get_github_data();
 		return ( !empty( $_date->updated_at ) ) ? date( 'Y-m-d', strtotime( $_date->updated_at ) ) : false;
-	}
-
-
-	/**
-	 * Get plugin description
-	 *
-	 * @since 1.0
-	 * @return string $description the description
-	 */
-	public function get_description() {
-		$_description = $this->get_github_data();
-		return ( !empty( $_description->description ) ) ? $_description->description : false;
 	}
 
 
