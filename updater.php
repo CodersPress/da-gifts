@@ -137,10 +137,10 @@ class WP_DAG_UPDATER {
 		if ( ! isset( $this->config['version'] ) )
 			$this->config['version'] = $plugin_data['Version'];
 
-		if ( ! isset( $this->config['version'] ) )
+		if ( ! isset( $this->config['requires'] ) )
 			$this->config['requires'] = $plugin_data['WP_Requires'];
 
-		if ( ! isset( $this->config['version'] ) )
+		if ( ! isset( $this->config['tested'] ) )
 			$this->config['tested'] = $plugin_data['WP_Compatible'];
 
 		if ( ! isset( $this->config['author'] ) )
