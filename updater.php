@@ -39,6 +39,7 @@ class WP_DAG_UPDATER {
 	 */
 	var $config;
 
+
 	/**
 	 * @var $github_data temporiraly store the data fetched from GitHub, allows us to only load the data once per class instance
 	 * @access private
@@ -77,8 +78,9 @@ class WP_DAG_UPDATER {
 	/**
 	 * Check wether or not the transients need to be overruled and API needs to be called for every single page load
 	 *
-	 * @return bool overrule or not
+	 * @uncomment bool overrule or not
 	 */
+    // defined( 'WP_DAG_FORCE_UPDATE', true )
 	public function overrule_transients() {
 		return ( defined( 'WP_DAG_FORCE_UPDATE' ) && WP_DAG_FORCE_UPDATE );
 	}
@@ -107,6 +109,12 @@ class WP_DAG_UPDATER {
 		if ( ! isset( $this->config['new_version'] ) )
 			$this->config['new_version'] = $this->get_new_version();
 
+		if ( ! isset( $this->config['tested'] ) )
+			$this->config['tested'] = $this->get_tested_version();
+
+		if ( ! isset( $this->config['requires'] ) )
+			$this->config['requires'] = $this->get_requires_version();
+
 		if ( ! isset( $this->config['last_updated'] ) )
 			$this->config['last_updated'] = $this->get_date();
 
@@ -119,18 +127,11 @@ class WP_DAG_UPDATER {
 		if ( ! isset( $this->config['version'] ) )
 			$this->config['version'] = $plugin_data['Version'];
 
-		if ( ! isset( $this->config['requires'] ) )
-			$this->config['requires'] = $plugin_data['WP_Requires'];
-
-		if ( ! isset( $this->config['tested'] ) )
-			$this->config['tested'] = $plugin_data['WP_Compatible'];
-
 		if ( ! isset( $this->config['author'] ) )
 			$this->config['author'] = $plugin_data['Author'];
 
 		if ( ! isset( $this->config['homepage'] ) )
 			$this->config['homepage'] = $plugin_data['PluginURI'];
-
 
 	}
 
@@ -179,17 +180,34 @@ class WP_DAG_UPDATER {
 
 			if (is_array($raw_response)) {
 				if (!empty($raw_response['body']))
-					preg_match( '/.*Version\:\s*(.*)$/mi', $raw_response['body'], $matches );
+					preg_match( '/.*Version\:\s*(.*)$/mi', $raw_response['body'], $version );
 			}
 
-				$version = $matches[1];
+				$version = $version[1];
 
-			// refresh every 6 hours
-			if ( false !== $version )
-				set_site_transient( md5($this->config['slug']).'_new_version', $version, 60*60*6 );
 		}
 
 		return $version;
+	}
+
+	public function get_requires_version() {
+			$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
+			if (is_array($raw_response)) {
+				if (!empty($raw_response['body']))
+                    preg_match( '/.*WP_Requires\:\s*(.*)$/mi', $raw_response['body'], $requires);
+			}
+				$requires = $requires[1];
+		return $requires;
+	}
+
+	public function get_tested_version() {
+			$raw_response = $this->remote_get( trailingslashit( $this->config['raw_url'] ) . basename( $this->config['slug'] ) );
+			if (is_array($raw_response)) {
+				if (!empty($raw_response['body']))
+                    preg_match( '/.*WP_Compatible\:\s*(.*)$/mi', $raw_response['body'], $tested );
+			}
+				$tested = $tested[1];
+		return $tested;
 	}
 
 
@@ -256,6 +274,17 @@ class WP_DAG_UPDATER {
 		return ( !empty( $_date->updated_at ) ) ? date( 'Y-m-d', strtotime( $_date->updated_at ) ) : false;
 	}
 
+
+	/**
+	 * Get plugin description
+	 *
+	 * @since 1.0
+	 * @return string $description the description
+	 */
+	public function get_description() {
+		$_description = $this->get_github_data();
+		return ( !empty( $_description->description ) ) ? $_description->description : false;
+	}
 
 	/**
 	 * Get Plugin data
