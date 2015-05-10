@@ -4,33 +4,6 @@
 if ( ! defined( 'ABSPATH' ) )
 	return;
 
-/**
- *
- *
- * @version 1.6
- * @author Joachim Kudish <info@jkudish.com>
- * @link http://jkudish.com
- * @package WP_GitHub_Updater
- * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
- * @copyright Copyright (c) 2011-2013, Joachim Kudish
- *
- * GNU General Public License, Free Software Foundation
- * <http://creativecommons.org/licenses/GPL/2.0/>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 class WP_DAG_UPDATER {
 
 	/**
@@ -80,9 +53,9 @@ class WP_DAG_UPDATER {
 	 *
 	 * @uncomment bool overrule or not
 	 */
-    // defined( 'WP_DAG_FORCE_UPDATE', true )
+    // defined( 'WP_FORCE_UPDATE', true )
 	public function overrule_transients() {
-		return ( defined( 'WP_DAG_FORCE_UPDATE' ) && WP_DAG_FORCE_UPDATE );
+		return ( defined( 'WP_FORCE_UPDATE' ) && WP_FORCE_UPDATE );
 	}
 
 
@@ -182,9 +155,10 @@ class WP_DAG_UPDATER {
 				if (!empty($raw_response['body']))
 					preg_match( '/.*Version\:\s*(.*)$/mi', $raw_response['body'], $version );
 			}
-
-				$version = $version[1];
-
+                $version = $version[1];
+                if ( empty( $version[1] ) )
+                // refresh every 6 hours
+                set_site_transient( md5($this->config['slug']).'_new_version', $version, 60*60*6 );
 		}
 
 		return $version;
@@ -259,7 +233,7 @@ class WP_DAG_UPDATER {
 			$this->github_data = $github_data;
 		}
 
-		return $github_data;
+		return $github_data; 
 	}
 
 
@@ -348,7 +322,7 @@ class WP_DAG_UPDATER {
 			return false;
 
 		$response->slug = $this->config['slug'];
-		$response->plugin_name  = $this->config['plugin_name'];
+		$response->name  = $this->config['plugin_name'];
 		$response->version = $this->config['new_version'];
 		$response->author = $this->config['author'];
 		$response->homepage = $this->config['homepage'];
