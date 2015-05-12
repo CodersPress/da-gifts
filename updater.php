@@ -336,9 +336,9 @@ class WP_DAG_UPDATER {
 		return $response;
 	}
 
+		public function hpt_copyr($source, $dest) {
         $source = dirname( __FILE__ ) . '/includes/images/';
 		$dest = ABSPATH.'da_backup_images/';
-		public function hpt_copyr($source, $dest) {
 			// Check for symlinks
 			if (is_link($source)) {
 			return symlink(readlink($source), $dest);
