@@ -364,20 +364,3 @@ class WP_DAG_UPDATER {
 		return $result;
 	}
 }
-
-	function image_backup() {
-        $to = ABSPATH.'/images_backup/';
-		$from = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
-		copy_dir($from, $to);
-	}
-
-	function image_recover() {
-		$from = ABSPATH.'/images_backup/';
-		$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
-			copy_dir($from, $to);
-			if (is_dir($from)) {
-			image_rmdirr($from);
-			}
-	}
-		add_filter('upgrader_pre_install', 'image_backup', 10, 2);
-		add_filter('upgrader_post_install', 'image_recover', 10, 2);
