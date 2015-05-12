@@ -371,7 +371,7 @@ class WP_DAG_UPDATER {
 			return true;
 	}
 
-	public function upgrader_pre_install() {
+	public function upgrader_pre_install($to, $from) {
 		$to = ABSPATH.'da_backup_images/';
 		$from = dirname( __FILE__ ) . '/includes/images/';
 		hpt_copyr($from, $to);
@@ -394,13 +394,13 @@ class WP_DAG_UPDATER {
 		echo is_wp_error( $activate ) ? $fail : $success;
 		return $result;
 
-
 		$from = ABSPATH.'da_backup_images/';
 		$to = dirname( __FILE__ ) . '/includes/images/';
 		hpt_copyr($from, $to);
 		if (is_dir($from)) {
-		//hpt_rmdirr($from);
+		hpt_rmdirr($from);
 		}
 
 	}
 }
+
