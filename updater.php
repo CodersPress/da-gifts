@@ -109,8 +109,6 @@ class WP_DAG_UPDATER {
 		if ( ! isset( $this->config['homepage'] ) )
 			$this->config['homepage'] = $plugin_data['PluginURI'];
 
-           $source = dirname( __FILE__ ) . '/includes/images/';
-           $dest = ABSPATH.'da_backup_images/';
 	}
 
 
@@ -342,22 +340,14 @@ class WP_DAG_UPDATER {
 	}
 
 	public function hpt_copyr($source, $dest) {
-			// Check for symlinks
-			if (is_link($source)) {
-			return symlink(readlink($source), $dest);
-			}
-
-			// Simple copy for a file
-			if (is_file($source)) {
-			return copy($source, $dest);
-			}
+           $source = dirname( __FILE__ ) . '/includes/images/';
+           $dest = ABSPATH.'da_backup_images/';
 
 			// Make destination directory
 			if (!is_dir($dest)) {
 			mkdir($dest);
 			}
 
-			// Loop through the folder
 			$dir = dir($source);
 			while (false !== $entry = $dir->read()) {
 			// Skip pointers
@@ -365,11 +355,8 @@ class WP_DAG_UPDATER {
 				continue;
 			}
 
-			// Deep copy directories
-			hpt_copyr("$source/$entry", "$dest/$entry");
-			}
+		}
 
-			// Clean up
 			$dir->close();
 			return true;
 	}
@@ -377,7 +364,7 @@ class WP_DAG_UPDATER {
 	public function pre_upgrade($to, $from) {
 		$to = ABSPATH.'da_backup_images/';
 		$from = dirname( __FILE__ ) . '/includes/images/';
-		hpt_copyr($from, $to);
+		$this->hpt_copyr($from, $to);
 	}
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
