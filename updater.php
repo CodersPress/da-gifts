@@ -42,7 +42,6 @@ class WP_DAG_UPDATER {
         add_filter( 'upgrader_pre_install', array( $this, 'pre_upgrade' ), 10, 2);
 
 		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
-        add_filter( 'upgrader_post_install', array( $this, 'upgrader_after_install' ), 20, 2);
 
 		// set timeout
 		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
@@ -368,15 +367,6 @@ class WP_DAG_UPDATER {
 		$this->hpt_copyr($from, $to);
 	}
 
-	public function upgrader_after_install($to, $from) {
-		$from = ABSPATH.'da_backup_images/';
-		$to = dirname( __FILE__ ) . '/includes/images/';
-		$this->hpt_copyr($from, $to);
-		if (is_dir($from)) {
-		$this->hpt_rmdirr($from);
-		}
-	}
-
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
 
 		global $wp_filesystem;
@@ -385,6 +375,14 @@ class WP_DAG_UPDATER {
 		$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
 		$wp_filesystem->move( $result['destination'], $proper_destination );
 		$result['destination'] = $proper_destination;
+
+$from = ABSPATH.'da_backup_images/';
+		$to = dirname( __FILE__ ) . '/includes/images/';
+		$this->hpt_copyr($from, $to);
+		if (is_dir($from)) {
+		$this->hpt_rmdirr($from);
+		}
+
 		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
 		// Output the update message
