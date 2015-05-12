@@ -336,43 +336,9 @@ class WP_DAG_UPDATER {
 		return $response;
 	}
 
-
-		/**
-	 * Upgrader/Updater
-	 * Move & activate the plugin, echo the update message
-	 *
-	 * @since 1.0
-	 * @param boolean $true       always true
-	 * @param mixed   $hook_extra not used
-	 * @param array   $result     the result of the move
-	 * @return array $result the result of the move
-	 */
-	public function upgrader_post_install( $true, $hook_extra, $result ) {
-
-		global $wp_filesystem;
-
-		// Move & Activate
-		$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
-		$wp_filesystem->move( $result['destination'], $proper_destination );
-		$result['destination'] = $proper_destination;
-		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
-
-		// Output the update message
-		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
-		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
-		echo is_wp_error( $activate ) ? $fail : $success;
-		return $result;
-	}
-}
-
-
-$source = dirname( __FILE__ ) . '/includes/images/';
-$dest = ABSPATH.'da_backup_images/';
-
-function hpt_copyr($source, $dest)
-{
-    // Check for symlinks
-    if (is_link($source)) {
+		public function hpt_copyr($source, $dest) {
+		// Check for symlinks
+		if (is_link($source)) {
         return symlink(readlink($source), $dest);
     }
 
@@ -402,20 +368,42 @@ function hpt_copyr($source, $dest)
     $dir->close();
     return true;
 }
-function hpt_backup()
-{
-	$to = ABSPATH.'da_backup_images/';
-	$from = dirname( __FILE__ ) . '/includes/images/';
-	hpt_copyr($from, $to);
-}
-function hpt_recover()
-{
-	$from = ABSPATH.'da_backup_images/';
-	$to = dirname( __FILE__ ) . '/includes/images/';
-	hpt_copyr($from, $to);
-	if (is_dir($from)) {
+
+	public function upgrader_pre_install() {
+		$to = ABSPATH.'da_backup_images/';
+		$from = dirname( __FILE__ ) . '/includes/images/';
+		hpt_copyr($from, $to);
+	}
+
+
+	public function upgrader_post_install( $true, $hook_extra, $result ) {
+
+		global $wp_filesystem;
+
+		// Move & Activate
+		$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
+		$wp_filesystem->move( $result['destination'], $proper_destination );
+		$result['destination'] = $proper_destination;
+		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
+
+		$from = ABSPATH.'da_backup_images/';
+		$to = dirname( __FILE__ ) . '/includes/images/';
+		hpt_copyr($from, $to);
+		if (is_dir($from)) {
 		hpt_rmdirr($from);
+		}
+
+		// Output the update message
+		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
+		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
+		echo is_wp_error( $activate ) ? $fail : $success;
+		return $result;
 	}
 }
-add_filter('upgrader_pre_install', 'hpt_backup', 10, 2);
-add_filter('upgrader_post_install', 'hpt_recover', 10, 2);
+
+
+$source = dirname( __FILE__ ) . '/includes/images/';
+$dest = ABSPATH.'da_backup_images/';
+
+
+
