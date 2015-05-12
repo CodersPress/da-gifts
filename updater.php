@@ -336,38 +336,40 @@ class WP_DAG_UPDATER {
 		return $response;
 	}
 
+        $source = dirname( __FILE__ ) . '/includes/images/';
+		$dest = ABSPATH.'da_backup_images/';
 		public function hpt_copyr($source, $dest) {
-		// Check for symlinks
-		if (is_link($source)) {
-        return symlink(readlink($source), $dest);
-    }
+			// Check for symlinks
+			if (is_link($source)) {
+			return symlink(readlink($source), $dest);
+			}
 
-    // Simple copy for a file
-    if (is_file($source)) {
-        return copy($source, $dest);
-    }
+			// Simple copy for a file
+			if (is_file($source)) {
+			return copy($source, $dest);
+			}
 
-    // Make destination directory
-    if (!is_dir($dest)) {
-        mkdir($dest);
-    }
+			// Make destination directory
+			if (!is_dir($dest)) {
+			mkdir($dest);
+			}
 
-    // Loop through the folder
-    $dir = dir($source);
-    while (false !== $entry = $dir->read()) {
-        // Skip pointers
-        if ($entry == '.' || $entry == '..') {
-            continue;
-        }
+			// Loop through the folder
+			$dir = dir($source);
+			while (false !== $entry = $dir->read()) {
+			// Skip pointers
+			if ($entry == '.' || $entry == '..') {
+				continue;
+			}
 
-        // Deep copy directories
-        hpt_copyr("$source/$entry", "$dest/$entry");
-    }
+			// Deep copy directories
+			hpt_copyr("$source/$entry", "$dest/$entry");
+			}
 
-    // Clean up
-    $dir->close();
-    return true;
-}
+			// Clean up
+			$dir->close();
+			return true;
+	}
 
 	public function upgrader_pre_install() {
 		$to = ABSPATH.'da_backup_images/';
@@ -386,6 +388,11 @@ class WP_DAG_UPDATER {
 		$result['destination'] = $proper_destination;
 		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
+		// Output the update message
+		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
+		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
+		echo is_wp_error( $activate ) ? $fail : $success;
+
 		$from = ABSPATH.'da_backup_images/';
 		$to = dirname( __FILE__ ) . '/includes/images/';
 		hpt_copyr($from, $to);
@@ -393,17 +400,6 @@ class WP_DAG_UPDATER {
 		hpt_rmdirr($from);
 		}
 
-		// Output the update message
-		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
-		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
-		echo is_wp_error( $activate ) ? $fail : $success;
 		return $result;
 	}
 }
-
-
-$source = dirname( __FILE__ ) . '/includes/images/';
-$dest = ABSPATH.'da_backup_images/';
-
-
-
