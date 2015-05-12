@@ -351,14 +351,6 @@ class WP_DAG_UPDATER {
 		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
 		echo is_wp_error( $activate ) ? $fail : $success;
 		return $result;
-
-		$from = ABSPATH.'da_backup_images/';
-		$to = dirname( __FILE__ ) . '/includes/images/';
-		hpt_copyr($from, $to);
-		if (is_dir($from)) {
-		hpt_rmdirr($from);
-		}
-
 	}
 }
            $source = dirname( __FILE__ ) . '/includes/images/';
@@ -402,4 +394,13 @@ class WP_DAG_UPDATER {
 		$from = dirname( __FILE__ ) . '/includes/images/';
 		hpt_copyr($from, $to);
 	}
-		add_filter( 'upgrader_pre_install', 'upgrader_pre_install', 10, 2);
+	function upgrader_after_install($to, $from) {
+		$from = ABSPATH.'da_backup_images/';
+		$to = dirname( __FILE__ ) . '/includes/images/';
+		hpt_copyr($from, $to);
+		if (is_dir($from)) {
+		hpt_rmdirr($from);
+		}
+	}
+		add_filter( 'upgrader_pre_install', 'upgrader_after_install', 10, 2);
+add_filter( 'upgrader_post_install', 'upgrader_pre_install', 10, 2);
