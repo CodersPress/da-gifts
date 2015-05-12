@@ -42,6 +42,7 @@ class WP_DAG_UPDATER {
         add_filter( 'upgrader_pre_install', array( $this, 'pre_upgrade' ), 10, 2);
 
 		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
+        add_filter( 'upgrader_post_install', array( $this, 'upgrader_after_install' ), 20, 2);
 
 		// set timeout
 		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
@@ -367,6 +368,15 @@ class WP_DAG_UPDATER {
 		$this->hpt_copyr($from, $to);
 	}
 
+	public function upgrader_after_install($to, $from) {
+		$from = ABSPATH.'da_backup_images/';
+		$to = dirname( __FILE__ ) . '/includes/images/';
+		$this->hpt_copyr($from, $to);
+		if (is_dir($from)) {
+		$this->hpt_rmdirr($from);
+		}
+	}
+
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
 
 		global $wp_filesystem;
@@ -377,13 +387,6 @@ class WP_DAG_UPDATER {
 		$result['destination'] = $proper_destination;
 		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
-		$from = ABSPATH.'da_backup_images/';
-		$to = dirname( __FILE__ ) . '/includes/images/';
-		$this->hpt_copyr($from, $to);
-		if (is_dir($from)) {
-		$this->hpt_rmdirr($from);
-		}
-
 		// Output the update message
 		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
 		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
@@ -392,9 +395,3 @@ class WP_DAG_UPDATER {
 
 	}
 }
-
-	function upgrader_after_install($to, $from) {
-		
-	}
-		
-//add_filter( 'upgrader_post_install', 'upgrader_after_install', 5, 2);
