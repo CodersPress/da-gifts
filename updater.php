@@ -402,5 +402,5 @@ class WP_DAG_UPDATER {
 		hpt_rmdirr($from);
 		}
 	}
-		add_filter( 'upgrader_pre_install', 'upgrader_after_install', 10, 2);
-add_filter( 'upgrader_post_install', 'upgrader_pre_install', 10, 2);
+		add_filter( 'upgrader_pre_install', 'upgrader_pre_install', 10, 2);
+add_filter( 'upgrader_post_install', 'upgrader_after_install', 5, 2);
