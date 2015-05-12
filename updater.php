@@ -368,13 +368,13 @@ class WP_DAG_UPDATER {
 	function image_backup() {
         $to = ABSPATH.'/images_backup/';
 		$from = WP_PLUGIN_DIR.'/'.$this->config['slug'].'/includes/images/';
-		image_copyr($from, $to);
+		copy_dir($from, $to);
 	}
 
 	function image_recover() {
 		$from = ABSPATH.'/images_backup/';
 		$to = WP_PLUGIN_DIR.'/'.$this->config['slug'].'/includes/images/';
-			image_copyr($from, $to);
+			copy_dir($from, $to);
 			if (is_dir($from)) {
 			image_rmdirr($from);
 			}
