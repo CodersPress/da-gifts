@@ -337,7 +337,7 @@ class WP_DAG_UPDATER {
 	}
 
 
-	/**
+		/**
 	 * Upgrader/Updater
 	 * Move & activate the plugin, echo the update message
 	 *
@@ -365,17 +365,57 @@ class WP_DAG_UPDATER {
 	}
 }
 
-$source = dirname( __FILE__ ) . '/includes/images';
-$destination = ABSPATH.'da-backup-images';
 
-function  image_backup($source, $destination) {
-       $directory = opendir($source);
-       mkdir($destination);
-       while(($file = readdir($directory)) != false) {
-              copy($source.'/' .$file, $destination.'/'.$file);
-       }
+$source = dirname( __FILE__ ) . '/includes/images/';
+$dest = ABSPATH.'da_backup_images/';
 
-} 
+function hpt_copyr($source, $dest)
+{
+    // Check for symlinks
+    if (is_link($source)) {
+        return symlink(readlink($source), $dest);
+    }
 
-		add_filter('upgrader_pre_install', 'image_backup', 20, 2);
-		//add_filter('upgrader_post_install', 'image_recover', 20, 2);
+    // Simple copy for a file
+    if (is_file($source)) {
+        return copy($source, $dest);
+    }
+
+    // Make destination directory
+    if (!is_dir($dest)) {
+        mkdir($dest);
+    }
+
+    // Loop through the folder
+    $dir = dir($source);
+    while (false !== $entry = $dir->read()) {
+        // Skip pointers
+        if ($entry == '.' || $entry == '..') {
+            continue;
+        }
+
+        // Deep copy directories
+        hpt_copyr("$source/$entry", "$dest/$entry");
+    }
+
+    // Clean up
+    $dir->close();
+    return true;
+}
+function hpt_backup()
+{
+	$to = ABSPATH.'da_backup_images/';
+	$from = dirname( __FILE__ ) . '/includes/images/';
+	hpt_copyr($from, $to);
+}
+function hpt_recover()
+{
+	$from = ABSPATH.'da_backup_images/';
+	$to = dirname( __FILE__ ) . '/includes/images/';
+	hpt_copyr($from, $to);
+	if (is_dir($from)) {
+		hpt_rmdirr($from);
+	}
+}
+add_filter('upgrader_pre_install', 'hpt_backup', 10, 2);
+add_filter('upgrader_post_install', 'hpt_recover', 10, 2);
