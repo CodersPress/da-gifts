@@ -349,22 +349,7 @@ class WP_DAG_UPDATER {
 	 */
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
 
-		global $wp_filesystem;
-
-		// Move & Activate
-		$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
-		$wp_filesystem->move( $result['destination'], $proper_destination );
-		$result['destination'] = $proper_destination;
-		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
-
-		// Output the update message
-		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
-		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
-		echo is_wp_error( $activate ) ? $fail : $success;
-		return $result;
-	}
-
-		function image_backup()
+function image_backup()
 		{
 		$to = dirname(__FILE__).'/../images_backup/';
 		$from = dirname(__FILE__).'/includes/images/';
@@ -379,6 +364,21 @@ class WP_DAG_UPDATER {
 		if (is_dir($from)) {
 		image_rmdirr($from);
 		}
+		}
+
+		global $wp_filesystem;
+
+		// Move & Activate
+		$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
+		$wp_filesystem->move( $result['destination'], $proper_destination );
+		$result['destination'] = $proper_destination;
+		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
+
+		// Output the update message
+		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
+		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
+		echo is_wp_error( $activate ) ? $fail : $success;
+		return $result;
 	}
 }
 		add_filter('upgrader_pre_install', 'image_backup', 10, 2);
