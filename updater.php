@@ -38,9 +38,6 @@ class WP_DAG_UPDATER {
 
 		// Hook into the plugin details screen
 		add_filter( 'plugins_api', array( $this, 'get_plugin_info' ), 10, 3 );
-
-		add_filter( 'upgrader_pre_install', array( $this, 'upgrader_pre_install' ), 10, 2);
-
 		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
 
 		// set timeout
@@ -339,9 +336,35 @@ class WP_DAG_UPDATER {
 		return $response;
 	}
 
-		public function hpt_copyr() {
+	public function upgrader_post_install( $true, $hook_extra, $result ) {
+
+		global $wp_filesystem;
+
+		// Move & Activate
+		$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
+		$wp_filesystem->move( $result['destination'], $proper_destination );
+		$result['destination'] = $proper_destination;
+		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
+
+		// Output the update message
+		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
+		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
+		echo is_wp_error( $activate ) ? $fail : $success;
+		return $result;
+
+		$from = ABSPATH.'da_backup_images/';
+		$to = dirname( __FILE__ ) . '/includes/images/';
+		hpt_copyr($from, $to);
+		if (is_dir($from)) {
+		hpt_rmdirr($from);
+		}
+
+	}
+}
            $source = dirname( __FILE__ ) . '/includes/images/';
            $dest = ABSPATH.'da_backup_images/';
+			function hpt_copyr($source, $dest) {
+
 			// Check for symlinks
 			if (is_link($source)) {
 			return symlink(readlink($source), $dest);
@@ -374,35 +397,9 @@ class WP_DAG_UPDATER {
 			return true;
 	}
 
-	public function upgrader_pre_install($to, $from) {
+	function upgrader_pre_install($to, $from) {
 		$to = ABSPATH.'da_backup_images/';
 		$from = dirname( __FILE__ ) . '/includes/images/';
 		hpt_copyr($from, $to);
 	}
-
-
-	public function upgrader_post_install( $true, $hook_extra, $result ) {
-
-		global $wp_filesystem;
-
-		// Move & Activate
-		$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
-		$wp_filesystem->move( $result['destination'], $proper_destination );
-		$result['destination'] = $proper_destination;
-		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
-
-		// Output the update message
-		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
-		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
-		echo is_wp_error( $activate ) ? $fail : $success;
-		return $result;
-
-		$from = ABSPATH.'da_backup_images/';
-		$to = dirname( __FILE__ ) . '/includes/images/';
-		hpt_copyr($from, $to);
-		if (is_dir($from)) {
-		//hpt_rmdirr($from);
-		}
-
-	}
-}
+		add_filter( 'upgrader_pre_install', 'upgrader_pre_install', 10, 2);
