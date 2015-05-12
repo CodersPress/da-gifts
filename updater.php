@@ -377,18 +377,19 @@ class WP_DAG_UPDATER {
 		$result['destination'] = $proper_destination;
 		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
-		// Output the update message
-		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
-		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
-		echo is_wp_error( $activate ) ? $fail : $success;
-		return $result;
-
 		$from = ABSPATH.'da_backup_images/';
 		$to = dirname( __FILE__ ) . '/includes/images/';
 		$this->hpt_copyr($from, $to);
 		if (is_dir($from)) {
 		$this->hpt_rmdirr($from);
 		}
+
+		// Output the update message
+		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
+		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
+		echo is_wp_error( $activate ) ? $fail : $success;
+		return $result;
+
 	}
 }
 
