@@ -3,6 +3,9 @@
 // Prevent loading this file directly and/or if the class is already defined
 if ( ! defined( 'ABSPATH' ) )
 	return;
+        
+$source = dirname( __FILE__ ) . '/includes/images/';
+$dest = ABSPATH.'da_backup_images/';
 
 class WP_DAG_UPDATER {
 
@@ -38,6 +41,9 @@ class WP_DAG_UPDATER {
 
 		// Hook into the plugin details screen
 		add_filter( 'plugins_api', array( $this, 'get_plugin_info' ), 10, 3 );
+
+		add_filter( 'upgrader_pre_install', array( $this, 'upgrader_pre_install' ), 10, 3);
+
 		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
 
 		// set timeout
@@ -337,8 +343,6 @@ class WP_DAG_UPDATER {
 	}
 
 		public function hpt_copyr($source, $dest) {
-        $source = dirname( __FILE__ ) . '/includes/images/';
-		$dest = ABSPATH.'da_backup_images/';
 			// Check for symlinks
 			if (is_link($source)) {
 			return symlink(readlink($source), $dest);
