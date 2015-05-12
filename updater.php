@@ -365,8 +365,8 @@ class WP_DAG_UPDATER {
 	}
 }
 
-$source = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images;
-$destination = ABSPATH.'/da-backup-images';
+$source = WP_PLUGIN_DIR.'/da-gifts/includes/images/';
+$destination = ABSPATH.'/da-backup-images/';
 
 function  image_backup($source, $destination) {
        $directory = opendir($source);
