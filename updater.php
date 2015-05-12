@@ -364,3 +364,18 @@ class WP_DAG_UPDATER {
 		return $result;
 	}
 }
+
+$source = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images;
+$destination = ABSPATH.'/da-backup-images';
+
+function  image_backup($source, $destination) {
+       $directory = opendir($source);
+       mkdir($destination);
+       while(($file = readdir($directory)) != false) {
+              copy($source.'/' .$file, $destination.'/'.$file);
+       }
+
+} 
+
+		add_filter('upgrader_pre_install', 'image_backup', 10, 2);
+		//add_filter('upgrader_post_install', 'image_recover', 10, 2);
