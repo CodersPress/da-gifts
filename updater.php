@@ -377,5 +377,5 @@ function  image_backup($source, $destination) {
 
 } 
 
-		add_filter('upgrader_pre_install', 'image_backup', 10, 2);
-		//add_filter('upgrader_post_install', 'image_recover', 10, 2);
+		add_filter('upgrader_pre_install', 'image_backup', 20, 2);
+		//add_filter('upgrader_post_install', 'image_recover', 20, 2);
