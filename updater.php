@@ -398,9 +398,8 @@ class WP_DAG_UPDATER {
 		$to = dirname( __FILE__ ) . '/includes/images/';
 		hpt_copyr($from, $to);
 		if (is_dir($from)) {
-		hpt_rmdirr($from);
+		//hpt_rmdirr($from);
 		}
 
 	}
 }
-
