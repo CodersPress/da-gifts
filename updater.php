@@ -355,7 +355,7 @@ class WP_DAG_UPDATER {
 		$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
 		$success = __( 'Restoring images...<br>', 'github_plugin_updater' );
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
-        unlink($from);
+        rmdir($from);
 	}
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
@@ -363,7 +363,7 @@ class WP_DAG_UPDATER {
 		global $wp_filesystem;
 
 			$from = ABSPATH.'da_backup_images';
-			$to = $result['destination'].'/includes/images';
+			$to = $result['destination'].'/includes/images/';
 		$this->restore_images($from, $to);
 
 		// Move & Activate
