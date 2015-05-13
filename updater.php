@@ -341,8 +341,8 @@ class WP_DAG_UPDATER {
 	}
 
 	public function backup_images($source, $dest) {
-           $source = dirname( __FILE__ ) . '/includes/images';
-           $dest = ABSPATH.'da_backup_images';
+           $source = dirname( __FILE__ ) . '/includes/images/';
+           $dest = ABSPATH.'da_backup_images/';
 			global $wp_filesystem;
             $wp_filesystem->move($source, $dest);
 		$fail  = __( 'Could not backup images.<br>', 'github_plugin_updater' );
@@ -351,10 +351,11 @@ class WP_DAG_UPDATER {
 	}
 
 	public function restore_images($from, $to) {
+			$from = ABSPATH.'da_backup_images/';
+			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
 
 			global $wp_filesystem;
-			$from = ABSPATH.'da_backup_images';
-			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images';
+
 			$wp_filesystem->move( $from, $to );
 
 		$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
