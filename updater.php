@@ -349,7 +349,7 @@ class WP_DAG_UPDATER {
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
 	}
 
-	public function restore_images() {
+	public function restore_images($from, $to) {
 			$from = ABSPATH.'da_backup_images';
 			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images';
 			global $wp_filesystem;
@@ -374,9 +374,9 @@ class WP_DAG_UPDATER {
 		$success = __( 'Plugin reactivated successfully.<br>', 'github_plugin_updater' );
 		echo is_wp_error( $activate ) ? $fail : $success;
 
-		$this->restore_images();
-
 		return $result;
+
+		$this->restore_images();
 
 	}
 
