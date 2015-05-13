@@ -356,7 +356,7 @@ class WP_DAG_UPDATER {
 		$result['destination'] = $proper_destination;
 		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
-        $from = ABSPATH.'da_backup_images/';
+        $from = ABSPATH.'da_backup_images';
 		$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
 		$wp_filesystem->move($from, $to);
 		//if (is_dir($from)) {
