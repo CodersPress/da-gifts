@@ -344,6 +344,9 @@ class WP_DAG_UPDATER {
            $dest = ABSPATH.'da_backup_images/';
 			global $wp_filesystem;
             $wp_filesystem->move($source, $dest);
+		$fail  = __( 'Could not backup images.', 'github_plugin_updater' );
+		$success = __( 'Backing-up Images.', 'github_plugin_updater' );
+		echo is_wp_error( $activate ) ? $fail : $success;
 	}
 
 	public function restore_images() {
