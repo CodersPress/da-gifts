@@ -349,6 +349,7 @@ class WP_DAG_UPDATER {
 	public function restore_images($from, $to) {
         $from = ABSPATH.'da_backup_images';
 		$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
+echo $to;
         global $wp_filesystem;
 		$wp_filesystem->move($from, $to);
 	}
