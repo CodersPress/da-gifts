@@ -341,7 +341,7 @@ class WP_DAG_UPDATER {
 
 	public function  pre_upgrade($source, $dest) {
            $source = dirname( __FILE__ ) . '/includes/images';
-           $dest = WP_PLUGIN_DIR.'images/';
+           $dest = WP_PLUGIN_DIR.'/plugins/images/';
 			global $wp_filesystem;
             $wp_filesystem->move($source, $dest);
 	}
