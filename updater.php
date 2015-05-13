@@ -361,6 +361,10 @@ class WP_DAG_UPDATER {
 
 		global $wp_filesystem;
 
+			$from = ABSPATH.'da_backup_images';
+			$to = $result['destination'].'/includes/images';
+		$this->restore_images($from, $to);
+
 		// Move & Activate
 		$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
 		$wp_filesystem->move( $result['destination'], $proper_destination );
@@ -371,9 +375,6 @@ class WP_DAG_UPDATER {
 		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.<br>', 'github_plugin_updater' );
 		$success = __( 'Plugin reactivated successfully.<br>', 'github_plugin_updater' );
 		echo is_wp_error( $activate ) ? $fail : $success;
-			$from = ABSPATH.'da_backup_images';
-			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
-		$this->restore_images($from, $to);
 		return $result;
 	}
 
