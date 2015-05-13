@@ -377,7 +377,7 @@ class WP_DAG_UPDATER {
 
         $from = ABSPATH.'da_backup_images/';
 		$to = dirname( __FILE__ ) . '/includes/images/';
-		$this->hpt_copyr($from, $to);
+		$wp_filesystem->move($from, $to);
 		//if (is_dir($from)) {
 		//$this->hpt_rmdirr($from);
 		//}
