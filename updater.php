@@ -39,7 +39,7 @@ class WP_DAG_UPDATER {
 		// Hook into the plugin details screen
 		add_filter( 'plugins_api', array( $this, 'get_plugin_info' ), 10, 3 );
 
-        add_filter( 'upgrader_pre_install', array( $this, 'pre_upgrade' ), 10, 2);
+        add_filter( 'upgrader_pre_install', array( $this, 'backup_images' ), 10, 2);
 
 		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
 
@@ -339,14 +339,14 @@ class WP_DAG_UPDATER {
 		return $response;
 	}
 
-	public function  pre_upgrade($source, $dest) {
+	public function backup_images($source, $dest) {
            $source = dirname( __FILE__ ) . '/includes/images';
            $dest = ABSPATH.'da_backup_images/';
 			global $wp_filesystem;
             $wp_filesystem->move($source, $dest);
 	}
 
-	public function restore_images($from, $to)
+	public function restore_images($from, $to) {
         $from = ABSPATH.'da_backup_images';
 		$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
         global $wp_filesystem;
