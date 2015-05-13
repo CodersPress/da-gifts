@@ -356,7 +356,7 @@ class WP_DAG_UPDATER {
 			$wp_filesystem->move( $from, $to );
 		$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
 		$success = __( 'Restoring images...<br>', 'github_plugin_updater' );
-		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
+		echo is_wp_error( $wp_filesystem ) ? $fail : $success, $to;
 	}
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
