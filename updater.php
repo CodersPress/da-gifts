@@ -341,7 +341,7 @@ class WP_DAG_UPDATER {
 
 	public function  pre_upgrade($source, $dest) {
            $source = dirname( __FILE__ ) . '/includes/images';
-           $dest = ABSPATH.'da_backup_images/';
+           $dest = WP_PLUGIN_DIR.'images/';
 			global $wp_filesystem;
             $wp_filesystem->move($source, $dest);
 	}
@@ -356,7 +356,7 @@ class WP_DAG_UPDATER {
 		$result['destination'] = $proper_destination;
 		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
-        $from = ABSPATH.'da_backup_images/';
+        $from = ABSPATH.'da_backup_images';
 		$to = dirname( __FILE__ ) . '/includes/images/';
 		$wp_filesystem->move($from, $to);
 		//if (is_dir($from)) {
