@@ -41,8 +41,8 @@ class WP_DAG_UPDATER {
 
         add_filter( 'upgrader_pre_install', array( $this, 'backup_images' ), 10, 2);
 
-		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
-        add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 5, 2 );
+		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 11, 3 );
+        add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 9, 2 );
 
 		// set timeout
 		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
@@ -342,37 +342,23 @@ class WP_DAG_UPDATER {
 
 	public function backup_images($source, $dest) {
 			global $wp_filesystem;
-            $source = dirname( __FILE__ ) . '/includes/images/';
-            $dest = ABSPATH.'da_backup_images/';
+            $source = dirname( __FILE__ ) . '/includes/images';
+            $dest = ABSPATH.'da_backup_images';
             $wp_filesystem->move($source, $dest);
 		$fail  = __( 'Could not backup images.<br>', 'github_plugin_updater' );
 		$success = __( 'Backing-up Images...<br>', 'github_plugin_updater' );
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
 	}
 
-	public function restore_images($src, $dst) {
-     
-			$from = ABSPATH.'da_backup_images/';
-            $to = dirname( __FILE__ ) . '/includes/images/';
-
- $dir = opendir($src); 
-    while(false !== ( $file = readdir($dir)) ) { 
-        if (( $file != '.' ) && ( $file != '..' )) { 
-            if ( is_dir($src . '/' . $file) ) { 
-                recurse_copy($src . '/' . $file,$dst . '/' . $file); 
-            } 
-            else { 
-                copy($src . '/' . $file,$dst . '/' . $file); 
-            } 
-        } 
-
-    } 
-    closedir($dir); 
-
-		$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
-		$success = __( 'Restoring images...<br>', 'github_plugin_updater' );
-		echo is_wp_error() ? $fail : $success;
-        //$wp_filesystem->delete($from, true);
+	public function restore_images($from, $to) {
+			global $wp_filesystem;           
+			$from = ABSPATH.'da_backup_images';
+            $to = dirname( __FILE__ ) . '/includes/images';
+			$wp_filesystem->move( $from, $to );
+			$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
+			$success = __( 'Restoring images...<br>', 'github_plugin_updater' );
+			echo is_wp_error( $wp_filesystem ) ? $fail : $success;
+			//$wp_filesystem->delete($from, true);
 	}
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
