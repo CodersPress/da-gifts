@@ -341,7 +341,7 @@ class WP_DAG_UPDATER {
 	}
 
 	public function backup_images($source, $dest) {
-           $source = dirname( __FILE__ ) . '/includes/images/';
+           $source = dirname( __FILE__ ) . '/includes/images';
            $dest = ABSPATH.'da_backup_images/';
 			global $wp_filesystem;
             $wp_filesystem->move($source, $dest);
@@ -353,7 +353,7 @@ class WP_DAG_UPDATER {
 	public function restore_images($from, $to) {
 
 			global $wp_filesystem;
-			$from = ABSPATH.'da_backup_images/';
+			$from = ABSPATH.'da_backup_images';
 			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
 			$wp_filesystem->move( $from, $to );
 
