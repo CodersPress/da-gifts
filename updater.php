@@ -342,23 +342,23 @@ class WP_DAG_UPDATER {
 
 	public function backup_images($source, $dest) {
 			global $wp_filesystem;
-            $source = dirname( __FILE__ ) . '/includes/images/';
-            $dest = ABSPATH.'da_backup_images/';
+            $source = dirname( __FILE__ ) . '/includes/images';
+            $dest = ABSPATH.'da_backup_images';
             $wp_filesystem->move($source, $dest);
 		$fail  = __( 'Could not backup images.<br>', 'github_plugin_updater' );
 		$success = __( 'Backing-up Images...<br>', 'github_plugin_updater' );
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
 	}
 
-	public function restore_images($dest, $source) {
+	public function restore_images($from, $to) {
 			global $wp_filesystem;           
-			$dest = ABSPATH.'da_backup_images/';
-            $source = dirname( __FILE__ ) . '/includes/images/';
-			$wp_filesystem->put_contents( $dest, $source );
+			$from = ABSPATH.'da_backup_images';
+            $to = dirname( __FILE__ ) . '/includes/images';
+			$wp_filesystem->move( $dest, $source );
 		$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
 		$success = __( 'Restoring images...<br>', 'github_plugin_updater' );
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
-        $wp_filesystem->delete($dest, true);
+        //$wp_filesystem->delete($from, true);
 	}
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
