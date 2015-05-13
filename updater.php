@@ -357,17 +357,8 @@ class WP_DAG_UPDATER {
 			// Move & Activate
 			$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
 
-			$from = ABSPATH.'da_backup_images/';
-            $to = dirname( __FILE__ ) . '/includes/images';
-
 			$wp_filesystem->move( $result['destination'], $proper_destination );
 			$result['destination'] = $proper_destination;
-
-			$wp_filesystem->move( $from, $to );
-			$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
-			$success = __( 'Restoring Images...<br>', 'github_plugin_updater' );
-			echo is_wp_error( $wp_filesystem ) ? $fail : $success;
-			//$wp_filesystem->delete($from, true);
 
 			$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
@@ -376,6 +367,17 @@ class WP_DAG_UPDATER {
 			$success = __( 'Plugin reactivated successfully.<br>', 'github_plugin_updater' );
 			echo is_wp_error( $activate ) ? $fail : $success;
 			return $result;
+
+			// Restore images
+			$from = ABSPATH.'da_backup_images';
+            $to = dirname( __FILE__ ) . '/includes/images';
+
+			$wp_filesystem->move( $from, $to );
+			$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
+			$success = __( 'Restoring Images...<br>', 'github_plugin_updater' );
+			echo is_wp_error( $wp_filesystem ) ? $fail : $success;
+			//$wp_filesystem->delete($from, true);
+
 	}
 
 }
