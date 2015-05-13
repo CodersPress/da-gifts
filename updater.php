@@ -42,7 +42,7 @@ class WP_DAG_UPDATER {
         add_filter( 'upgrader_pre_install', array( $this, 'backup_images' ), 10, 2);
 
 		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
-       	add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 99, 2 );
+       	add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 99, 3 );
 
 		// set timeout
 		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
@@ -371,13 +371,14 @@ class WP_DAG_UPDATER {
 			return $result;
 	}
 
-	public function restore_images($from, $to) {
+	public function restore_images($true, $hook_extra, $result) {
 
 			global $wp_filesystem;
 
             // Restore images
 			$from = ABSPATH.'da_backup_images/';
-            $to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name']. '/includes/images/';
+            $to = $result['destination']. 'includes/images';
+
 			$wp_filesystem->move( $from, $to );
 			$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
 			$success = __( 'Restoring Images...<br>', 'github_plugin_updater' );
