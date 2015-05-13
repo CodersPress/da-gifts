@@ -42,7 +42,6 @@ class WP_DAG_UPDATER {
         add_filter( 'upgrader_pre_install', array( $this, 'backup_images' ), 10, 2);
 
 		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 11, 3 );
-        add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 9, 2 );
 
 		// set timeout
 		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
@@ -350,16 +349,6 @@ class WP_DAG_UPDATER {
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
 	}
 
-	public function restore_images($from, $to) {
-			global $wp_filesystem;           
-			$from = ABSPATH.'da_backup_images';
-            $to = dirname( __FILE__ ) . '/includes/images';
-			$wp_filesystem->move( $from, $to );
-			$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
-			$success = __( 'Restoring images...<br>', 'github_plugin_updater' );
-			echo is_wp_error( $wp_filesystem ) ? $fail : $success;
-			//$wp_filesystem->delete($from, true);
-	}
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
 
@@ -367,6 +356,13 @@ class WP_DAG_UPDATER {
 
 			// Move & Activate
 			$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
+
+			$from = ABSPATH.'da_backup_images/';
+
+			$wp_filesystem->move( $from, $result['destination'] );
+
+			//$wp_filesystem->delete($from, true);
+
 			$wp_filesystem->move( $result['destination'], $proper_destination );
 			$result['destination'] = $proper_destination;
 			$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
