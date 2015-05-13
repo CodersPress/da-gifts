@@ -41,7 +41,8 @@ class WP_DAG_UPDATER {
 
         add_filter( 'upgrader_pre_install', array( $this, 'backup_images' ), 10, 2);
 
-		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
+		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 11, 3 );
+        add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 9, 2 );
 
 		// set timeout
 		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
@@ -79,6 +80,9 @@ class WP_DAG_UPDATER {
 
 			$this->config['zip_url'] = $zip_url;
 		}
+
+			$from = ABSPATH.'da_backup_images/';
+			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
 
 		$plugin_data = $this->get_plugin_data();
 
@@ -349,12 +353,10 @@ class WP_DAG_UPDATER {
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
 	}
 
-	public function restore_images() {
+	public function restore_images($from, $to) {
 
 			global $wp_filesystem;
 
-			$from = ABSPATH.'da_backup_images/';
-			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
 			$wp_filesystem->move( $from, $to );
 
 		$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
@@ -378,8 +380,6 @@ class WP_DAG_UPDATER {
 			$success = __( 'Plugin reactivated successfully.<br>', 'github_plugin_updater' );
 			echo is_wp_error( $activate ) ? $fail : $success;
 			return $result;
-
-			$this->restore_images();
 	}
 
 }
