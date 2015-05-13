@@ -42,7 +42,7 @@ class WP_DAG_UPDATER {
         add_filter( 'upgrader_pre_install', array( $this, 'backup_images' ), 10, 2);
 
 		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
-		add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 20, 2 );
+		add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 10, 2 );
 
 		// set timeout
 		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
@@ -348,13 +348,10 @@ class WP_DAG_UPDATER {
 	}
 
 	public function restore_images($from, $to) {
-        $from = ABSPATH.'da_backup_images';
-		$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
-        if ( $wp_filesystem->move( $from, $to ) ) {
-        return true;
-    } else {
-        return WP_Error( 'moving_error', __( "Error trying to move the file to the new location.", 'mah-download-manager' ) );
-    }
+			$from = ABSPATH.'da_backup_images';
+			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
+			global $wp_filesystem;
+			$wp_filesystem->move( $from, $to );
 	}
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
