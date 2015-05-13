@@ -350,10 +350,10 @@ class WP_DAG_UPDATER {
 	public function restore_images($from, $to) {
         $from = ABSPATH.'da_backup_images';
 		$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
-        global $wp_filesystem;
-		$wp_filesystem->move($from, $to);
-        }else {
-        return WP_Error( 'moving_error', __( "Error trying to move the file to the new location.", 'github_plugin_updater' ) );
+        if ( $wp_filesystem->move( $from, $to ) ) {
+        return true;
+    } else {
+        return WP_Error( 'moving_error', __( "Error trying to move the file to the new location.", 'mah-download-manager' ) );
     }
 	}
 
