@@ -81,9 +81,6 @@ class WP_DAG_UPDATER {
 			$this->config['zip_url'] = $zip_url;
 		}
 
-			$from = ABSPATH.'da_backup_images/';
-			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
-
 		$plugin_data = $this->get_plugin_data();
 
 		if ( ! isset( $this->config['new_version'] ) )
@@ -356,7 +353,8 @@ class WP_DAG_UPDATER {
 	public function restore_images($from, $to) {
 
 			global $wp_filesystem;
-
+			$from = ABSPATH.'da_backup_images/';
+			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
 			$wp_filesystem->move( $from, $to );
 
 		$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
