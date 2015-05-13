@@ -377,8 +377,8 @@ class WP_DAG_UPDATER {
 
             // Restore images
 			$from = ABSPATH.'da_backup_images/';
-            $to = dirname( __FILE__ ) . '/includes/images';
-
+            $to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name']. '/includes/images';
+$wp_filesystem->mkdir( $to );
 			$wp_filesystem->move( $from, $to );
 			$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
 			$success = __( 'Restoring Images...<br>', 'github_plugin_updater' );
