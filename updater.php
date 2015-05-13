@@ -344,9 +344,9 @@ class WP_DAG_UPDATER {
            $dest = ABSPATH.'da_backup_images/';
 			global $wp_filesystem;
             $wp_filesystem->move($source, $dest);
-		$fail  = __( 'Could not backup images.', 'github_plugin_updater' );
-		$success = __( 'Backing-up Images.', 'github_plugin_updater' );
-		echo is_wp_error( $activate ) ? $fail : $success;
+		$fail  = __( 'Could not backup images.<br>', 'github_plugin_updater' );
+		$success = __( 'Backing-up Images...<br>', 'github_plugin_updater' );
+		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
 	}
 
 	public function restore_images() {
@@ -354,6 +354,9 @@ class WP_DAG_UPDATER {
 			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
 			global $wp_filesystem;
 			$wp_filesystem->move( $from, $to );
+		$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
+		$success = __( 'Restoring images...<br>', 'github_plugin_updater' );
+		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
 	}
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
@@ -367,8 +370,8 @@ class WP_DAG_UPDATER {
 		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
 		// Output the update message
-		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
-		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
+		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.<br>', 'github_plugin_updater' );
+		$success = __( 'Plugin reactivated successfully.<br>', 'github_plugin_updater' );
 		echo is_wp_error( $activate ) ? $fail : $success;
 
 		$this->restore_images();
