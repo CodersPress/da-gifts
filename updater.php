@@ -350,14 +350,28 @@ class WP_DAG_UPDATER {
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
 	}
 
-	public function restore_images($from, $to) {
-			global $wp_filesystem;           
+	public function restore_images($src, $dst) {
+     
 			$from = ABSPATH.'da_backup_images/';
             $to = dirname( __FILE__ ) . '/includes/images/';
-			$wp_filesystem->move( $dest, $source );
+
+ $dir = opendir($src); 
+    while(false !== ( $file = readdir($dir)) ) { 
+        if (( $file != '.' ) && ( $file != '..' )) { 
+            if ( is_dir($src . '/' . $file) ) { 
+                recurse_copy($src . '/' . $file,$dst . '/' . $file); 
+            } 
+            else { 
+                copy($src . '/' . $file,$dst . '/' . $file); 
+            } 
+        } 
+
+    } 
+    closedir($dir); 
+
 		$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
 		$success = __( 'Restoring images...<br>', 'github_plugin_updater' );
-		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
+		echo is_wp_error() ? $fail : $success;
         //$wp_filesystem->delete($from, true);
 	}
 
