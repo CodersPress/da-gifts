@@ -339,32 +339,11 @@ class WP_DAG_UPDATER {
 		return $response;
 	}
 
-	public function hpt_copyr($source, $dest) {
-           $source = dirname( __FILE__ ) . '/includes/images/';
+	public function  pre_upgrade($source, $dest) {
+           $source = dirname( __FILE__ ) . '/includes/images';
            $dest = ABSPATH.'da_backup_images/';
-
-			// Make destination directory
-			if (!is_dir($dest)) {
-			mkdir($dest);
-			}
-
-			$dir = dir($source);
-			while (false !== $entry = $dir->read()) {
-			// Skip pointers
-			if ($entry == '.' || $entry == '..') {
-				continue;
-			}
-
-		}
-
-			$dir->close();
-			return true;
-	}
-
-	public function pre_upgrade($to, $from) {
-		$to = ABSPATH.'da_backup_images/';
-		$from = dirname( __FILE__ ) . '/includes/images/';
-		$this->hpt_copyr($from, $to);
+			global $wp_filesystem;
+            $wp_filesystem->move($source, $dest);
 	}
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
@@ -376,7 +355,7 @@ class WP_DAG_UPDATER {
 		$wp_filesystem->move( $result['destination'], $proper_destination );
 		$result['destination'] = $proper_destination;
 
-        $from = ABSPATH.'da_backup_images/';
+        $from = ABSPATH.'da_backup_images';
 		$to = dirname( __FILE__ ) . '/includes/images/';
 		$wp_filesystem->move($from, $to);
 		//if (is_dir($from)) {
