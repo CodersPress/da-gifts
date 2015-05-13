@@ -349,9 +349,14 @@ class WP_DAG_UPDATER {
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
 	}
 
-	public function restore_images($from, $to) {
+	public function restore_images() {
+
 			global $wp_filesystem;
+
+			$from = ABSPATH.'da_backup_images/';
+			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
 			$wp_filesystem->move( $from, $to );
+
 		$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
 		$success = __( 'Restoring images...<br>', 'github_plugin_updater' );
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
@@ -360,23 +365,21 @@ class WP_DAG_UPDATER {
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
 
-		global $wp_filesystem;
+			global $wp_filesystem;
 
-			$from = ABSPATH.'da_backup_images/';
-			$to = $result['destination'].'/includes/images/';
-		$this->restore_images($from, $to);
+			// Move & Activate
+			$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
+			$wp_filesystem->move( $result['destination'], $proper_destination );
+			$result['destination'] = $proper_destination;
+			$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
-		// Move & Activate
-		$proper_destination = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'];
-		$wp_filesystem->move( $result['destination'], $proper_destination );
-		$result['destination'] = $proper_destination;
-		$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
+			// Output the update message
+			$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.<br>', 'github_plugin_updater' );
+			$success = __( 'Plugin reactivated successfully.<br>', 'github_plugin_updater' );
+			echo is_wp_error( $activate ) ? $fail : $success;
+			return $result;
 
-		// Output the update message
-		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.<br>', 'github_plugin_updater' );
-		$success = __( 'Plugin reactivated successfully.<br>', 'github_plugin_updater' );
-		echo is_wp_error( $activate ) ? $fail : $success;
-		return $result;
+			$this->restore_images();
 	}
 
 }
