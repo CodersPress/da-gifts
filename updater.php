@@ -384,6 +384,8 @@ class WP_DAG_UPDATER {
 			$success = __( 'Restoring Images...<br>', 'github_plugin_updater' );
 			echo is_wp_error( $wp_filesystem ) ? $fail : $success;
 			$wp_filesystem->delete($from, true);
+
+			return $result;
 	}
 
 
