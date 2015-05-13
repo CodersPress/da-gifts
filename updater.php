@@ -42,7 +42,6 @@ class WP_DAG_UPDATER {
         add_filter( 'upgrader_pre_install', array( $this, 'backup_images' ), 10, 2);
 
 		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
-		add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 10, 2 );
 
 		// set timeout
 		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
@@ -347,7 +346,7 @@ class WP_DAG_UPDATER {
             $wp_filesystem->move($source, $dest);
 	}
 
-	public function restore_images($from, $to) {
+	public function restore_images() {
 			$from = ABSPATH.'da_backup_images';
 			$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
 			global $wp_filesystem;
@@ -368,6 +367,9 @@ class WP_DAG_UPDATER {
 		$fail  = __( 'The plugin has been updated, but could not be reactivated. Please reactivate it manually.', 'github_plugin_updater' );
 		$success = __( 'Plugin reactivated successfully.', 'github_plugin_updater' );
 		echo is_wp_error( $activate ) ? $fail : $success;
+
+		$this->restore_images();
+
 		return $result;
 
 	}
