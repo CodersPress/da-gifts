@@ -42,7 +42,7 @@ class WP_DAG_UPDATER {
         add_filter( 'upgrader_pre_install', array( $this, 'backup_images' ), 10, 2);
 
 		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
-       	add_filter( 'upgrader_post_install', array( $this, 'restore_images' ) );
+       	add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 5, 2 );
 
 		// set timeout
 		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
@@ -371,7 +371,10 @@ class WP_DAG_UPDATER {
 			return $result;
 	}
 
-	public function restore_images() {
+	public function restore_images($from, $to) {
+
+			global $wp_filesystem;
+
             // Restore images
 			$from = ABSPATH.'da_backup_images';
             $to = $proper_destination.'/includes/images/';
