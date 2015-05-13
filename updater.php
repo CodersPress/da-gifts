@@ -340,7 +340,7 @@ class WP_DAG_UPDATER {
 	}
 
 	public function backup_images($source, $dest) {
-           $source = dirname( __FILE__ ) . '/includes/images';
+           $source = dirname( __FILE__ ) . '/includes/images/';
            $dest = ABSPATH.'da_backup_images/';
 			global $wp_filesystem;
             $wp_filesystem->move($source, $dest);
@@ -355,14 +355,14 @@ class WP_DAG_UPDATER {
 		$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
 		$success = __( 'Restoring images...<br>', 'github_plugin_updater' );
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
-        rmdir($from);
+        //rmdir($from);
 	}
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
 
 		global $wp_filesystem;
 
-			$from = ABSPATH.'da_backup_images';
+			$from = ABSPATH.'da_backup_images/';
 			$to = $result['destination'].'/includes/images/';
 		$this->restore_images($from, $to);
 
