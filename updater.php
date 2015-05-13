@@ -352,6 +352,9 @@ class WP_DAG_UPDATER {
 		$to = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images/';
         global $wp_filesystem;
 		$wp_filesystem->move($from, $to);
+        }else {
+        return WP_Error( 'moving_error', __( "Error trying to move the file to the new location.", 'github_plugin_updater' ) );
+    }
 	}
 
 	public function upgrader_post_install( $true, $hook_extra, $result ) {
