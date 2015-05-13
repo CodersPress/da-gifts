@@ -369,6 +369,7 @@ class WP_DAG_UPDATER {
 		echo is_wp_error( $activate ) ? $fail : $success;
 		return $result;
 
-		$this->restore_images()
+		$this->restore_images();
 	}
+
 }
