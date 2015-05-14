@@ -361,7 +361,7 @@ class WP_DAG_UPDATER {
 
 			$wp_filesystem->move( $result['destination'], $proper_destination );
 			$result['destination'] = $proper_destination;
-		    $wp_filesystem->delete(WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images', true);
+		    //$wp_filesystem->delete(WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images', true);
 			$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
 			// Output the update message
@@ -379,7 +379,7 @@ class WP_DAG_UPDATER {
 			$from = ABSPATH.'da_backup_images';
             $into = dirname( __FILE__ ) . '/includes/images';
 
-			$wp_filesystem->move($from, $into);
+			$wp_filesystem->move($from, $into, $overwrite = true);
 			$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
 			$success = __( 'Restoring Images...<br>', 'github_plugin_updater' );
 			echo is_wp_error( $wp_filesystem ) ? $fail : $success;
