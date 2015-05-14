@@ -376,10 +376,10 @@ class WP_DAG_UPDATER {
 
 			global $wp_filesystem;
 
-			$from = ABSPATH.'da_backup_images/';
+			$from = ABSPATH.'da_backup_images';
             $into = dirname( __FILE__ ) . '/includes/images';
 
-			$wp_filesystem->move($from, $into, true);
+			$wp_filesystem->move($from, $into, 0777);
 			$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
 			$success = __( 'Restoring Images...<br>', 'github_plugin_updater' );
 			echo is_wp_error( $wp_filesystem ) ? $fail : $success;
