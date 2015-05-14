@@ -144,7 +144,7 @@ echo '<div id="message" class="updated fade"><p><strong>Option setting saved.</s
 
 <br /><br />
 
-           <table class="widefat" style="width:80%;">     
+           <table class="widefat" style="max-width: 80%;">     
  <thead style="background:#2EA2CC;color:#fff;">
              <tr>
                 <th style="color:#fff;">Gift Item Editor :</th>
@@ -154,8 +154,8 @@ echo '<div id="message" class="updated fade"><p><strong>Option setting saved.</s
 <?php 
 			$allgift = da_gifts_allgift();
 			foreach ($allgift as $giftitem) {
-			echo '<div class="giftImages">';
-			echo '<img src="'. site_url() .'/wp-content/plugins/da-gifts/includes/images/'. $giftitem->gift_image .'" /><br>';
+			echo '<div class="giftImages" style="max-width:280px;min-height:380px;">';
+			echo '<img src="'. site_url() .'/wp-content/plugins/da-gifts/includes/images/'. $giftitem->gift_image .'" class="gift-img"/><br><br>';
 			echo '<div style="text-align:left;"><b>Description:</b> '.$giftitem->gift_name.'</div><br>';
             echo '<div><b>Gift Sent:</b> '.$giftitem->count.', times.</div><br>';
 			echo '<div>';
