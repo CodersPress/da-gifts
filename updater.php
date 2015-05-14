@@ -344,7 +344,9 @@ class WP_DAG_UPDATER {
 			global $wp_filesystem;
             $source = dirname( __FILE__ ) . '/includes/images';
             $dest = ABSPATH.'da_backup_images';
+			if (get_site_option('da-gifts-db-version') == '1') {
             $wp_filesystem->move($source, $dest);
+			}
 
 		$fail  = __( 'Could not backup images.<br>', 'github_plugin_updater' );
 		$success = __( 'Backing-up Images...<br>', 'github_plugin_updater' );
@@ -361,7 +363,10 @@ class WP_DAG_UPDATER {
 
 			$wp_filesystem->move( $result['destination'], $proper_destination );
 			$result['destination'] = $proper_destination;
-		    //$wp_filesystem->delete(WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images', true);
+
+			if (get_site_option('da-gifts-db-version') == '1') {
+		    $wp_filesystem->delete(WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images', true);
+			}
 			$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
 			// Output the update message
@@ -378,12 +383,14 @@ class WP_DAG_UPDATER {
 
 			$from = ABSPATH.'da_backup_images';
             $into = dirname( __FILE__ ) . '/includes/images';
-
-			$wp_filesystem->put_contents($from, $into);
+			if (get_site_option('da-gifts-db-version') == '1') {
+			$wp_filesystem->move($from, $into);			
+			$wp_filesystem->delete($from, true);
+			}
 			$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
 			$success = __( 'Restoring Images...<br>', 'github_plugin_updater' );
 			echo is_wp_error( $wp_filesystem ) ? $fail : $success;
-			$wp_filesystem->delete($from, true);
+
 
 	}
 
