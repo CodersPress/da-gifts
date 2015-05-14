@@ -376,7 +376,7 @@ class WP_DAG_UPDATER {
 
 			global $wp_filesystem;
 
-			$from = ABSPATH.'da_backup_images';
+			$from = ABSPATH.'da_backup_images/';
             $into = dirname( __FILE__ ) . '/includes/images';
 
 			$wp_filesystem->move($from, $into, $overwrite = true);
