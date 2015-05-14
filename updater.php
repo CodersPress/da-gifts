@@ -39,10 +39,10 @@ class WP_DAG_UPDATER {
 		// Hook into the plugin details screen
 		add_filter( 'plugins_api', array( $this, 'get_plugin_info' ), 10, 3 );
 
-        add_filter( 'upgrader_pre_install', array( $this, 'backup_images' ), 10, 2);
+        add_filter( 'upgrader_pre_install', array( $this, 'backup_images' ), 5, 2);
 
 		add_filter( 'upgrader_post_install', array( $this, 'upgrader_post_install' ), 10, 3 );
-       	add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 99, 2 );
+       	add_filter( 'upgrader_post_install', array( $this, 'restore_images' ), 20, 2 );
 
 		// set timeout
 		add_filter( 'http_request_timeout', array( $this, 'http_request_timeout' ) );
@@ -345,6 +345,7 @@ class WP_DAG_UPDATER {
             $source = dirname( __FILE__ ) . '/includes/images';
             $dest = ABSPATH.'da_backup_images';
             $wp_filesystem->move($source, $dest);
+
 		$fail  = __( 'Could not backup images.<br>', 'github_plugin_updater' );
 		$success = __( 'Backing-up Images...<br>', 'github_plugin_updater' );
 		echo is_wp_error( $wp_filesystem ) ? $fail : $success;
@@ -360,7 +361,7 @@ class WP_DAG_UPDATER {
 
 			$wp_filesystem->move( $result['destination'], $proper_destination );
 			$result['destination'] = $proper_destination;
-
+		    $wp_filesystem->delete(WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images', true);
 			$activate = activate_plugin( WP_PLUGIN_DIR.'/'.$this->config['slug'] );
 
 			// Output the update message
@@ -375,9 +376,8 @@ class WP_DAG_UPDATER {
 
 			global $wp_filesystem;
 
-            // Restore images
 			$from = ABSPATH.'da_backup_images';
-            $into = WP_PLUGIN_DIR.'/'.$this->config['proper_folder_name'].'/includes/images';
+            $into = dirname( __FILE__ ) . '/includes/images';
 
 			$wp_filesystem->move($from, $into);
 			$fail  = __( 'Could not restore images.<br>', 'github_plugin_updater' );
