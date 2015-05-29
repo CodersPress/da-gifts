@@ -39,6 +39,7 @@ function da_gifts_add_admin_menu() {
 
 function register_dag_settings() {
     register_setting("dag-settings-group", "dag_memberShipOnly");
+    register_setting("dag-settings-group", "dag_displayBox_Height");
 }
 
 add_action( 'admin_menu', 'da_gifts_add_admin_menu' );
@@ -76,10 +77,9 @@ function da_gifts_activate() {
      /* Version Set to 1 so we don't install DB again */ 
 	update_site_option( 'da-gifts-db-version', DA_GIFTS_DB_VERSION );
 
-add_action('admin_init', 'dag_defaults');
-function dag_defaults() {
     $option = array(
         "dag_memberShipOnly" => "yes", 
+        "dag_displayBox_Height" => "395", 
       );
     foreach($option as $key => $value) {
         if (get_option($key) == NULL) {
@@ -87,8 +87,6 @@ function dag_defaults() {
         }
     }
     return;
-}
-
 }
 
 register_activation_hook( __FILE__, 'da_gifts_activate' );

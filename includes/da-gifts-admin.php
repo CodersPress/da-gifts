@@ -121,6 +121,24 @@ echo '<div id="message" class="updated fade"><p><strong>Option setting saved.</s
 </form>
 </table>
 <br /><br />
+<table class="widefat" style="width:80%;">
+ <thead style="background:#2EA2CC;color:#fff;">
+            <tr>
+                <th style="color:#fff;">Gifts Display Box Height</th>
+                <th style="color:#fff;">Height in Pixels</th>
+                 <th style="color:#fff;">Save</th>
+            </tr>
+        </thead>
+<tr>
+<td>Set the inner height of the display box(popup) that holds your gift images.</td>
+<td>
+<input type="text" size="2" name="dag_displayBox_Height" value="<?php echo get_option("dag_displayBox_Height");?>"/>px
+</td>
+<td><input type="submit" class="button button-primary" name="submit" value="Save Setting"/></td>
+ </tr>
+</form>
+</table>
+<br /><br />
 <?php if ( isset($updated) ) : ?><?php echo "<div id='message' class='updated fade'><p>" . __( 'Description Updated!' ) . "</p></div>" ?><?php endif; ?>
 <?php if ( isset($uploaded) ) : ?><?php echo "<div id='message' class='updated fade'><p>" . __( 'Gift Uploaded Successfully!' ) . "</p></div>" ?><?php endif; ?>
 <table class="widefat" style="width:80%;">
@@ -187,13 +205,13 @@ function da_gifts_upload_dir() {
 
 function gifts_extended(){
 $allgift = da_gifts_allgift();
-echo '<ul class="giftideas clearfix">';
+echo '<div id="giftsBox" style="height:'.get_option("dag_displayBox_Height"). 'px;overflow:auto;"><ul class="giftideas clearfix">';
 foreach ($allgift as $giftitem) {
 echo '<li class="gift'.$giftitem->id.'">';
 echo '<a href=javascript:void(0); onclick=jQuery("#daGift").val("'.$giftitem->gift_image.'");jQuery(".giftideas,li").removeClass("selected");jQuery(".gift'.$giftitem->id.'").addClass("selected");><img src="'.site_url().'/wp-content/plugins/da-gifts/includes/images/'.$giftitem->gift_image.'" alt="'.$giftitem->gift_name.'" title="'.$giftitem->gift_name.'" class="img-responsive"/></a>';
 echo '</li>';
  } 
-echo '</ul>';
+echo '</ul></div>';
 }
 add_shortcode('GIFTSEXTENDED', 'gifts_extended');
 
