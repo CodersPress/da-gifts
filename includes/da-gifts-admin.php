@@ -206,7 +206,7 @@ jQuery('<?php do_shortcode('[GIFTSEXTENDED]');?>').insertAfter("#giftmodal > div
 </script>
 <?php 
 $dag_memberShipOnly = get_option("dag_memberShipOnly");
-if ( !$userdata->wlt_membership && $dag_memberShipOnly = "yes"){ ?>
+if ( !$userdata->wlt_membership && $dag_memberShipOnly == "yes"){ ?>
 <script>
 var NoMemberShip = "<?php echo strip_tags($CORE->_e(array('validate','25')));?>";
 jQuery('#giftmodal > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > form:nth-child(1)').attr('onsubmit', 'alert(NoMemberShip); return false;');
